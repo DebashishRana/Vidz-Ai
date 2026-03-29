@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Sentinel - Analytics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Analytics Page Specific Styles */
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .time-range-modern {
+            display: flex;
+            gap: 8px;
+            background: white;
+            padding: 6px;
+            border-radius: 50px;
+            border: 1px solid var(--gray-200);
+            width: fit-content;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .range-btn {
+            padding: 10px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 40px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--gray-600);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .range-btn:hover {
+            background: var(--gray-100);
+            transform: translateY(-2px);
+        }
+        
+        .range-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+            animation: pulse 0.5s ease;
+        }
+        
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .kpi-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--gray-200);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.3s ease;
+            animation: slideInUp 0.5s ease;
+            animation-fill-mode: both;
+        }
+        
+        .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+        .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+        .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+        .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        .kpi-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .kpi-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .kpi-label {
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        
+        .kpi-trend {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-block;
+            width: fit-content;
+        }
+        
+        .kpi-trend.positive {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .kpi-trend.negative {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-top: 25px;
+        }
+        
+        .chart-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow-sm);
+            animation: slideInUp 0.6s ease;
+            animation-fill-mode: both;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-card:nth-child(1) { animation-delay: 0.1s; }
+        .chart-card:nth-child(2) { animation-delay: 0.2s; }
+        .chart-card:nth-child(3) { animation-delay: 0.3s; }
+        
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+        
+        .chart-card.full-width {
+            grid-column: span 2;
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .chart-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+        
+        .chart-legend {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: var(--gray-600);
+        }
+        
+        .legend-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 5px;
+            animation: pulse 2s infinite;
+        }
+        
+        .legend-dot.verified {
+            background: var(--success);
+        }
+        
+        .legend-dot.flagged {
+            background: var(--danger);
+        }
+        
+        .legend-dot.genuine {
+            background: var(--success);
+        }
+        
+        .legend-dot.fraud {
+            background: var(--danger);
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <span class="logo-text">KYC Sentinel</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="verifications.html" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span>Verifications</span>
+                </a>
+                <a href="alerts.html" class="nav-item">
+                    <span class="nav-icon">⚠️</span>
+                    <span>Flagged Alerts</span>
+                </a>
+                <a href="documents.html" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Documents</span>
+                </a>
+                <a href="analytics.html" class="nav-item active">
+                    <span class="nav-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="weather-widget">
+                    <span>31°C</span>
+                    <span>Mostly sunny</span>
+                </div>
+                
+                <div class="user-info" onclick="openProfileModal()">
+                    <div class="user-avatar" id="profileAvatar"></div>
+                    <div class="user-details">
+                        <span class="user-name" id="profileName"></span>
+                        <span class="user-role" id="profileRole"></span>
+                    </div>
+                </div>
+                
+                <button class="logout-btn" onclick="logout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1>Analytics Dashboard</h1>
+
+            <!-- Time Range Selector -->
+            <div class="analytics-header">
+                <div class="time-range-modern">
+                    <button class="range-btn active" onclick="setActive(this)">24H</button>
+                    <button class="range-btn" onclick="setActive(this)">7D</button>
+                    <button class="range-btn" onclick="setActive(this)">30D</button>
+                    <button class="range-btn" onclick="setActive(this)">90D</button>
+                    <button class="range-btn" onclick="setActive(this)">1Y</button>
+                </div>
+                <button class="export-btn" onclick="exportAnalytics()">📥 Export Report</button>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <span class="kpi-value">12,845</span>
+                    <span class="kpi-label">Total Verifications</span>
+                    <span class="kpi-trend positive">+12.5%</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-value">9,876</span>
+                    <span class="kpi-label">Verified</span>
+                    <span class="kpi-trend positive">+8.2%</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-value">243</span>
+                    <span class="kpi-label">Flagged</span>
+                    <span class="kpi-trend negative">-3.1%</span>
+                </div>
+                <div class="kpi-card">
+                    <span class="kpi-value">2.4s</span>
+                    <span class="kpi-label">Avg. Processing Time</span>
+                    <span class="kpi-trend positive">-0.3s</span>
+                </div>
+            </div>
+
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <!-- Bar Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Verification Volume</h3>
+                        <div class="chart-legend">
+                            <span><span class="legend-dot verified"></span> Verified</span>
+                            <span><span class="legend-dot flagged"></span> Flagged</span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="volumeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Doughnut Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Fraud Detection Rate</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="fraudChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Line Chart -->
+                <div class="chart-card full-width">
+                    <div class="chart-header">
+                        <h3>Daily Verification Trend</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Pie Chart -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Document Types</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="docTypeChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Risk Distribution -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Risk Score Distribution</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load current user
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        // Update UI with user data
+        document.getElementById('profileName').textContent = currentUser.name;
+        document.getElementById('profileRole').textContent = currentUser.role;
+        
+        const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('profileAvatar').textContent = initials;
+
+        // Set active range button
+        function setActive(btn) {
+            document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function exportAnalytics() {
+            alert('Analytics report exported!');
+        }
+
+        function logout() {
+            if (confirm('Logout?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Initialize charts when page loads
+        window.onload = function() {
+            // Bar Chart
+            new Chart(document.getElementById('volumeChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [
+                        {
+                            label: 'Verified',
+                            data: [450, 520, 480, 590, 650, 380, 290],
+                            backgroundColor: '#06d6a0',
+                            borderRadius: 8,
+                            animation: {
+                                duration: 2000,
+                                easing: 'easeInOutBounce'
+                            }
+                        },
+                        {
+                            label: 'Flagged',
+                            data: [85, 95, 75, 110, 130, 55, 45],
+                            backgroundColor: '#ef476f',
+                            borderRadius: 8,
+                            animation: {
+                                duration: 2000,
+                                easing: 'easeInOutBounce'
+                            }
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e9ecef' } },
+                        x: { grid: { display: false } }
+                    },
+                    animation: {
+                        onComplete: function() {
+                            console.log('Bar chart animation complete');
+                        }
+                    }
+                }
+            });
+
+            // Doughnut Chart
+            new Chart(document.getElementById('fraudChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Genuine', 'Fraud'],
+                    datasets: [{
+                        data: [65, 35],
+                        backgroundColor: ['#06d6a0', '#ef476f'],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 2000
+                    }
+                }
+            });
+
+            // Line Chart
+            new Chart(document.getElementById('trendChart'), {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6'],
+                    datasets: [{
+                        label: 'Verifications',
+                        data: [2100, 2350, 2480, 2670, 2850, 3100],
+                        borderColor: '#4361ee',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#4361ee',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e9ecef' } }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+
+            // Pie Chart
+            new Chart(document.getElementById('docTypeChart'), {
+                type: 'pie',
+                data: {
+                    labels: ['Passport', 'Aadhaar', 'License', 'Utility', 'ID Card'],
+                    datasets: [{
+                        data: [3200, 4500, 2800, 1900, 2100],
+                        backgroundColor: [
+                            '#4361ee',
+                            '#4895ef',
+                            '#4cc9f0',
+                            '#7209b7',
+                            '#b5179e'
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 15
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        duration: 2000
+                    }
+                }
+            });
+
+            // Risk Distribution Chart
+            new Chart(document.getElementById('riskChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['0-20', '21-40', '41-60', '61-80', '81-100'],
+                    datasets: [{
+                        label: 'Number of Cases',
+                        data: [1850, 2200, 950, 700, 450],
+                        backgroundColor: [
+                            '#06d6a0',
+                            '#ffd166',
+                            '#ffb703',
+                            '#fb8b24',
+                            '#ef476f'
+                        ],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#e9ecef' } }
+                    },
+                    animation: {
+                        duration: 2000,
+                        easing: 'easeInOutBounce'
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citadelel - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <span class="logo-text">Citadel</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="verifications.html" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span>Verifications</span>
+                </a>
+                <a href="alerts.html" class="nav-item">
+                    <span class="nav-icon">⚠️</span>
+                    <span>Flagged Alerts</span>
+                </a>
+                <a href="verification_flow.html" class="nav-item" style="display: flex !important;">
+                    <span class="nav-icon">🔄</span>
+                    <span>New KYC Flow</span>
+                </a>
+                <a href="documents.html" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Documents</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <!-- WEATHER WIDGET REMOVED -->
+                
+                <div class="user-info" onclick="window.location.href='dashboard.html'">
+                    <div class="user-avatar" id="profileAvatar"></div>
+                    <div class="user-details">
+                        <span class="user-name" id="profileName"></span>
+                        <span class="user-role" id="profileRole"></span>
+                    </div>
+                </div>
+                
+                <button class="logout-btn" onclick="logout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>KYC Verification Dashboard</h1>
+                    <p class="welcome-text">AI-Powered Identity Verification & Fraud Detection for KYC Compliance</p>
+                </div>
+                <div class="action-buttons-row">
+                    <button class="action-btn primary" onclick="triggerUpload()">📤 Upload Batch
+                
+                    </button>
+                    <button class="action-btn success" onclick="verifyAll()">✅ Verify All</button>
+                    <button class="action-btn warning" onclick="flagSuspicious()">⚠️ Flag Suspicious</button>
+                    <button class="action-btn secondary" onclick="exportReport()">📊 Export</button>
+                    <button class="action-btn secondary" onclick="refreshDashboard()">🔄 Refresh</button>
+                    <button class="dark-mode-toggle" onclick="toggleDarkMode()" id="darkModeToggle">🌙</button>
+                    <button class="icon-btn" onclick="showNotification()">🔔</button>
+                    <button class="profile-btn" id="headerProfileBtn" onclick="openProfileModal()"></button>
+                </div>
+            </div>
+
+            <!-- Hidden File Inputs -->
+            <input type="file" id="fileInput" style="display: none;" webkitdirectory directory multiple onchange="handleFileUpload(this.files)">
+            <input type="file" id="frontCameraInput" style="display: none;" accept="image/*" onchange="handleFrontImageUpload(this.files)">
+            <input type="file" id="backCameraInput" style="display: none;" accept="image/*" onchange="handleBackImageUpload(this.files)">
+            <input type="file" id="selfieInput" style="display: none;" accept="image/*,video/*" onchange="handleSelfieUpload(this.files)">
+            <input type="file" id="aadharInput" style="display: none;" accept="image/*,application/pdf" onchange="handleAadharUpload(this.files)">
+            <input type="file" id="utilityInput" style="display: none;" accept="image/*,application/pdf" onchange="handleUtilityUpload(this.files)">
+            <input type="file" id="addressInput" style="display: none;" accept="image/*,application/pdf" onchange="handleAddressProofUpload(this.files)">
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Total Verifications</div>
+                    </div>
+                    <div class="stat-trend">0.0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✓</div>
+                    <div class="stat-content">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Verified</div>
+                    </div>
+                    <div class="stat-trend">0.0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-content">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Flagged</div>
+                    </div>
+                    <div class="stat-trend">0.0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-content">
+                        <div class="stat-value">0</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                    <div class="stat-trend">0.0%</div>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- KYC Table with PREVIOUS INDIAN NAMES -->
+                <div class="grid-card table-card">
+                    <div class="card-header">
+                        <h2>Recent Verifications</h2>
+                        <div class="card-actions">
+                            <button class="small-btn" onclick="viewAll()">View All</button>
+                        </div>
+                    </div>
+                    <table class="kyc-table">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Applicant</th>
+                                <th>Document</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Risk Score</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" style="text-align: center; color: #6b7280; padding: 20px;">No recent verifications available</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Risk Case Review with 6 Buttons -->
+                <div class="grid-card risk-card">
+                    <h2>Risk Case Review</h2>
+                    <div class="risk-content">
+                        <p class="risk-case" style="color: #6b7280; font-style: italic;">No pending risk cases to review.</p>
+                        <div class="risk-actions six-buttons">
+                            <button class="risk-btn confirm" onclick="confirmFraud()" disabled>Confirm Fraud</button>
+                            <button class="risk-btn clear" onclick="clearCase()" disabled>Clear Case</button>
+                            <button class="risk-btn review" onclick="reviewCase('')" disabled>Review</button>
+                            <button class="risk-btn escalate" onclick="escalateCase()" disabled>Escalate</button>
+                            <button class="risk-btn investigate" onclick="investigateCase()" disabled>Investigate</button>
+                            <button class="risk-btn flag" onclick="flagCase()" disabled>Flag</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Document Upload Section -->
+                    <div class="new-verification">
+                        <h3>Document Upload</h3>
+                        <div class="upload-grid-six">
+                            <button class="upload-option" onclick="document.getElementById('frontCameraInput').click()">
+                                <span>📸</span> Front Camera
+                            </button>
+                            <button class="upload-option" onclick="document.getElementById('backCameraInput').click()">
+                                <span>📸</span> Back Camera
+                            </button>
+                            <button class="upload-option" onclick="document.getElementById('selfieInput').click()">
+                                <span>🎥</span> Selfie
+                            </button>
+                            <button class="upload-option" onclick="document.getElementById('aadharInput').click()">
+                                <span>🆔</span> Aadhaar
+                            </button>
+                            <button class="upload-option" onclick="document.getElementById('utilityInput').click()">
+                                <span>💡</span> Utility
+                            </button>
+                            <button class="upload-option" onclick="document.getElementById('addressInput').click()">
+                                <span>📍</span> Address
+                            </button>
+                        </div>
+                        
+                        <!-- Upload Status -->
+                        <div id="uploadStatus" class="upload-status"></div>
+                    </div>
+                </div>
+
+                <!-- AI Verification Result -->
+                <div class="grid-card result-card">
+                    <h2>AI Verification Result</h2>
+                    <div class="result-items">
+                        <div class="result-item"><span>Face Match Score:</span><span class="result-value text-muted">Waiting...</span></div>
+                        <div class="result-item"><span>Document Authenticity:</span><span class="result-value text-muted">Waiting...</span></div>
+                        <div class="result-item"><span>Liveness Detection:</span><span class="result-value text-muted">Waiting...</span></div>
+                        <div class="result-item"><span>Aadhaar OCR:</span><span class="result-value text-muted">Waiting...</span></div>
+                        <div class="result-item"><span>Address Verification:</span><span class="result-value text-muted">Waiting...</span></div>
+                        <div class="result-item"><span>Signature Match:</span><span class="result-value text-muted">Waiting...</span></div>
+                    </div>
+                </div>
+
+                <!-- Fraud Analysis -->
+                <div class="grid-card fraud-card">
+                    <h2>Fraud Analysis</h2>
+                    <div class="fraud-items">
+                        <div class="fraud-item"><span>Face spoofing:</span><span class="fraud-status text-muted">--</span></div>
+                        <div class="fraud-item"><span>Deepfake detected:</span><span class="fraud-status text-muted">--</span></div>
+                        <div class="fraud-item"><span>Document tampering:</span><span class="fraud-status text-muted">--</span></div>
+                        <div class="fraud-item"><span>Duplicate identity:</span><span class="fraud-status text-muted">--</span></div>
+                        <div class="fraud-item"><span>Aadhaar forgery:</span><span class="fraud-status text-muted">--</span></div>
+                        <div class="fraud-item"><span>Address manipulation:</span><span class="fraud-status text-muted">--</span></div>
+                    </div>
+                </div>
+
+                <!-- Final Decision -->
+                <div class="grid-card decision-card">
+                    <h2>Final Decision</h2>
+                    <div class="decision-content">
+                        <div class="verification-status pending" style="background-color: #f3f4f6; color: #6b7280;"><strong>PENDING</strong></div>
+                        <div class="risk-level unknown">Risk Level: <strong>--</strong></div>
+                        <div class="decision-meta">
+                            <p>Reviewed by: --</p>
+                            <p>Confidence: --</p>
+                            <p>Compliance: --</p>
+                        </div>
+                        <button class="review-btn" onclick="startNewReview()" disabled style="opacity: 0.5; cursor: not-allowed;">Start New Review</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Profile Settings</h2>
+                <button class="close-btn" onclick="closeProfileModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-header">
+                    <div class="profile-avatar-large" id="modalAvatar"></div>
+                    <div>
+                        <h3 id="modalName"></h3>
+                        <p id="modalRole"></p>
+                    </div>
+                </div>
+                
+                <div class="profile-form">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="editName" class="modern-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="editEmail" class="modern-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Phone</label>
+                        <input type="tel" id="editPhone" class="modern-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Department</label>
+                        <input type="text" id="editDept" class="modern-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Company</label>
+                        <input type="text" id="editCompany" class="modern-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Bio</label>
+                        <textarea id="editBio" class="modern-textarea" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="cancel-btn" onclick="closeProfileModal()">Cancel</button>
+                    <button class="save-btn" onclick="saveProfile()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load current user
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        // Update UI with user data
+        function updateUserUI() {
+            document.getElementById('profileName').textContent = currentUser.name;
+            document.getElementById('profileRole').textContent = currentUser.role;
+            
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('profileAvatar').textContent = initials;
+            document.getElementById('headerProfileBtn').textContent = initials;
+        }
+        
+        updateUserUI();
+
+        // Fetch and display dashboard statistics
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch('http://localhost:8000/stats');
+                const stats = await response.json();
+                
+                // Update stat cards
+                const statCards = document.querySelectorAll('.stat-card');
+                const statValues = [
+                    stats.total_verifications,
+                    stats.verified,
+                    stats.flagged,
+                    stats.pending
+                ];
+                
+                statCards.forEach((card, index) => {
+                    const valueElement = card.querySelector('.stat-value');
+                    valueElement.textContent = statValues[index];
+                    
+                    // Add animation to changed values
+                    valueElement.style.animation = 'pulse 0.5s ease';
+                });
+                
+                // Calculate percentages if total > 0
+                if (stats.total_verifications > 0) {
+                    const trends = [
+                        ((stats.verified / stats.total_verifications) * 100).toFixed(1),
+                        ((stats.flagged / stats.total_verifications) * 100).toFixed(1),
+                        ((stats.pending / stats.total_verifications) * 100).toFixed(1)
+                    ];
+                    
+                    document.querySelectorAll('.stat-trend').forEach((trend, index) => {
+                        if (index > 0) {
+                            trend.textContent = trends[index - 1] + '%';
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load dashboard stats:', error);
+            }
+        }
+
+        // Load stats on page load and refresh every 5 seconds (deferred to ensure DOM renders)
+        setTimeout(() => {
+            loadDashboardStats();
+            setInterval(loadDashboardStats, 5000);
+        }, 100);
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const toggleBtn = document.getElementById('darkModeToggle');
+            if (document.body.classList.contains('dark-mode')) {
+                toggleBtn.textContent = '☀️';
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                toggleBtn.textContent = '🌙';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').textContent = '☀️';
+        }
+
+        // Profile Modal Functions
+        function openProfileModal() {
+            document.getElementById('modalName').textContent = currentUser.name;
+            document.getElementById('modalRole').textContent = currentUser.role;
+            
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('modalAvatar').textContent = initials;
+            
+            document.getElementById('editName').value = currentUser.name;
+            document.getElementById('editEmail').value = currentUser.email;
+            document.getElementById('editPhone').value = currentUser.phone || '';
+            document.getElementById('editDept').value = currentUser.department || '';
+            document.getElementById('editCompany').value = currentUser.company || '';
+            document.getElementById('editBio').value = currentUser.bio || '';
+            
+            document.getElementById('profileModal').style.display = 'flex';
+        }
+
+        function closeProfileModal() {
+            document.getElementById('profileModal').style.display = 'none';
+        }
+
+        function saveProfile() {
+            currentUser.name = document.getElementById('editName').value;
+            currentUser.email = document.getElementById('editEmail').value;
+            currentUser.phone = document.getElementById('editPhone').value;
+            currentUser.department = document.getElementById('editDept').value;
+            currentUser.company = document.getElementById('editCompany').value;
+            currentUser.bio = document.getElementById('editBio').value;
+            
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Update UI
+            document.getElementById('profileName').textContent = currentUser.name;
+            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+            document.getElementById('profileAvatar').textContent = initials;
+            document.getElementById('headerProfileBtn').textContent = initials;
+            
+            showNotification('Profile updated successfully!', 'success');
+            closeProfileModal();
+        }
+
+        // File Upload Handlers
+        function triggerUpload() {
+            document.getElementById('fileInput').click();
+        }
+
+        async function handleFileUpload(files) {
+            if (files.length === 0) return;
+            
+            // Filter out non-image files (like hidden OS files)
+            const imageFiles = Array.from(files).filter(file => file.type.startsWith('image/'));
+            
+            if (imageFiles.length === 0) {
+                showNotification('No valid images found in the selected folder.', 'warning');
+                return;
+            }
+
+            showNotification(`Processing batch of ${imageFiles.length} images...`, 'info');
+            
+            let processedCount = 0;
+            let aadharFoundCount = 0;
+            
+            // Update UI to show we are processing
+            const tbody = document.querySelector('.kyc-table tbody');
+            tbody.innerHTML = ''; // Clear the "No recent verifications" message
+            
+            for (const file of imageFiles) {
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    
+                    // Replace URL with your actual FastAPI endpoint for document detection
+                    const response = await fetch('http://localhost:8000/detect-doc', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const result = await response.json();
+                    
+                    // Add result to the table
+                    const tr = document.createElement('tr');
+                    const reqId = 'REQ-' + Math.floor(Math.random() * 10000);
+                    const isAadhar = result.document_type === 'Aadhar' || result.confidence > 0.7; // Adjust based on your API response structure
+                    
+                    if (isAadhar) aadharFoundCount++;
+
+                    tr.innerHTML = `
+                        <td>${reqId}</td>
+                        <td>Batch Upload</td>
+                        <td>${file.name}</td>
+                        <td>${new Date().toLocaleDateString()}</td>
+                        <td><span class="status-badge ${isAadhar ? 'success' : 'warning'}">${isAadhar ? 'Detected' : 'Unknown'}</span></td>
+                        <td>${result.confidence ? (result.confidence * 100).toFixed(1) + '%' : '--'}</td>
+                        <td><button class="small-btn" onclick="reviewCase('${reqId}')">View</button></td>
+                    `;
+                    tbody.appendChild(tr);
+                    
+                } catch (error) {
+                    console.error(`Error processing ${file.name}:`, error);
+                }
+                
+                processedCount++;
+            }
+            
+            showNotification(`Batch complete! Processed ${processedCount} images. Found ${aadharFoundCount} Aadhaar cards.`, 'success');
+            
+            // Update total stats
+            const statValues = document.querySelectorAll('.stat-value');
+            if (statValues.length >= 2) {
+                statValues[0].textContent = parseInt(statValues[0].textContent) + processedCount; // Total
+                statValues[1].textContent = parseInt(statValues[1].textContent) + aadharFoundCount; // Verified/Detected
+            }
+        }
+
+        function handleFrontImageUpload(files) {
+            if (files.length > 0) {
+                document.getElementById('uploadStatus').innerHTML = '<div class="upload-status-item">✅ Front image uploaded: ' + files[0].name + '</div>';
+                showNotification('Front image uploaded', 'success');
+            }
+        }
+
+        function handleBackImageUpload(files) {
+            if (files.length > 0) {
+                document.getElementById('uploadStatus').innerHTML = '<div class="upload-status-item">✅ Back image uploaded: ' + files[0].name + '</div>';
+                showNotification('Back image uploaded', 'success');
+            }
+        }
+
+        function handleSelfieUpload(files) {
+            if (files.length > 0) {
+                document.getElementById('uploadStatus').innerHTML = '<div class="upload-status-item">✅ Selfie uploaded: ' + files[0].name + '</div>';
+                showNotification('Selfie uploaded', 'success');
+            }
+        }
+
+        function handleAadharUpload(files) {
+            if (files.length > 0) {
+                document.getElementById('uploadStatus').innerHTML = '<div class="upload-status-item">✅ Aadhaar uploaded: ' + files[0].name + '</div>';
+                showNotification('Aadhaar uploaded', 'success');
+            }
+        }
+
+        function handleUtilityUpload(files) {
+            if (files.length > 0) {
+                document.getElementById('uploadStatus').innerHTML = '<div class="upload-status-item">✅ Utility bill uploaded: ' + files[0].name + '</div>';
+                showNotification('Utility bill uploaded', 'success');
+            }
+        }
+
+        function handleAddressProofUpload(files) {
+            if (files.length > 0) {
+                document.getElementById('uploadStatus').innerHTML = '<div class="upload-status-item">✅ Address proof uploaded: ' + files[0].name + '</div>';
+                showNotification('Address proof uploaded', 'success');
+            }
+        }
+
+        // Action Functions
+        function verifyAll() {
+            showNotification('Bulk verification started!', 'info');
+        }
+
+        function flagSuspicious() {
+            showNotification('Suspicious items flagged!', 'warning');
+        }
+
+        function exportReport() {
+            showNotification('Report exported!', 'success');
+        }
+
+        function refreshDashboard() {
+            loadDashboardStats();
+            showNotification('Dashboard refreshed!', 'success');
+        }
+
+        function viewAll() {
+            window.location.href = 'verifications.html';
+        }
+
+        function reviewCase(id) {
+            showNotification('Reviewing case ' + id, 'info');
+        }
+
+        function confirmFraud() {
+            showNotification('Fraud confirmed!', 'success');
+        }
+
+        function clearCase() {
+            showNotification('Case cleared!', 'success');
+        }
+
+        function escalateCase() {
+            showNotification('Case escalated!', 'warning');
+        }
+
+        function investigateCase() {
+            showNotification('Investigation started!', 'info');
+        }
+
+        function flagCase() {
+            showNotification('Case flagged!', 'warning');
+        }
+
+        function startNewReview() {
+            showNotification('Starting new review!', 'info');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('profileModal');
+            if (event.target === modal) {
+                closeProfileModal();
+            }
+        }
+    </script>
+</body>
+</html>

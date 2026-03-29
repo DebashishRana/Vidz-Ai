@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Sentinel - Verify Documents</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <span class="logo-text">KYC Sentinel</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="verifications.html" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span>Verifications</span>
+                </a>
+                <a href="alerts.html" class="nav-item">
+                    <span class="nav-icon">⚠️</span>
+                    <span>Flagged Alerts</span>
+                </a>
+                <a href="documents.html" class="nav-item active">
+                    <span class="nav-icon">📄</span>
+                    <span>Documents</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <!-- WEATHER WIDGET REMOVED -->
+                
+                <div class="user-info" onclick="window.location.href='dashboard.html'">
+                    <div class="user-avatar" id="profileAvatar"></div>
+                    <div class="user-details">
+                        <span class="user-name" id="profileName"></span>
+                        <span class="user-role" id="profileRole"></span>
+                    </div>
+                </div>
+                
+                <button class="logout-btn" onclick="logout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1>Document Management</h1>
+
+            <!-- Upload New Documents Section -->
+            <div class="upload-section">
+                <h2>Upload New Documents</h2>
+                <div class="document-grid">
+                    <!-- Passport Card -->
+                    <div class="doc-card" onclick="document.getElementById('fileInput').click()">
+                        <div class="doc-icon">🛂</div>
+                        <h3>Passport</h3>
+                        <p>Upload passport document for verification</p>
+                        <button class="doc-btn" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">Select File</button>
+                    </div>
+
+                    <!-- Driver's License Card -->
+                    <div class="doc-card" onclick="document.getElementById('fileInput').click()">
+                        <div class="doc-icon">🚗</div>
+                        <h3>Driver's License</h3>
+                        <p>Upload driver's license for verification</p>
+                        <button class="doc-btn" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">Select File</button>
+                    </div>
+
+                    <!-- ID Card Card -->
+                    <div class="doc-card" onclick="document.getElementById('fileInput').click()">
+                        <div class="doc-icon">🆔</div>
+                        <h3>ID Card</h3>
+                        <p>Upload national ID card for verification</p>
+                        <button class="doc-btn" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">Select File</button>
+                    </div>
+
+                    <!-- Residence Permit Card -->
+                    <div class="doc-card" onclick="document.getElementById('fileInput').click()">
+                        <div class="doc-icon">🏠</div>
+                        <h3>Residence Permit</h3>
+                        <p>Upload residence permit for verification</p>
+                        <button class="doc-btn" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">Select File</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hidden File Input -->
+            <input type="file" id="fileInput" style="display: none;" accept="image/*,application/pdf" onchange="handleFileUpload(this.files)">
+
+            <!-- Recent Documents Section -->
+            <div class="recent-docs">
+                <h2>Recent Documents</h2>
+                <table class="documents-table">
+                    <thead>
+                        <tr>
+                            <th>Document ID</th>
+                            <th>Type</th>
+                            <th>Applicant</th>
+                            <th>Upload Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>DOC001</td>
+                            <td>Passport</td>
+                            <td>Mark Tester</td>
+                            <td>2024-01-15</td>
+                            <td><span class="status-badge verified">VERIFIED</span></td>
+                            <td><button class="view-btn" onclick="viewDocument('DOC001')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>DOC002</td>
+                            <td>Driver's License</td>
+                            <td>John Doe</td>
+                            <td>2024-01-15</td>
+                            <td><span class="status-badge flagged">FLAGGED</span></td>
+                            <td><button class="view-btn" onclick="viewDocument('DOC002')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>DOC003</td>
+                            <td>ID Card</td>
+                            <td>Sarah Wilson</td>
+                            <td>2024-01-14</td>
+                            <td><span class="status-badge verified">VERIFIED</span></td>
+                            <td><button class="view-btn" onclick="viewDocument('DOC003')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>DOC004</td>
+                            <td>Passport</td>
+                            <td>Robert Chen</td>
+                            <td>2024-01-14</td>
+                            <td><span class="status-badge flagged">FLAGGED</span></td>
+                            <td><button class="view-btn" onclick="viewDocument('DOC004')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>DOC005</td>
+                            <td>Residence Permit</td>
+                            <td>Maria Garcia</td>
+                            <td>2024-01-13</td>
+                            <td><span class="status-badge pending">PENDING</span></td>
+                            <td><button class="view-btn" onclick="viewDocument('DOC005')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>DOC006</td>
+                            <td>Driver's License</td>
+                            <td>James Brown</td>
+                            <td>2024-01-13</td>
+                            <td><span class="status-badge verified">VERIFIED</span></td>
+                            <td><button class="view-btn" onclick="viewDocument('DOC006')">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load current user (YOUR USER)
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        // Update UI with YOUR user data
+        document.getElementById('profileName').textContent = currentUser.name;
+        document.getElementById('profileRole').textContent = currentUser.role;
+        
+        // Generate avatar initials from YOUR name
+        const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('profileAvatar').textContent = initials;
+
+        // File Upload Handler
+        function handleFileUpload(files) {
+            if (files.length > 0) {
+                alert('File uploaded: ' + files[0].name);
+            }
+        }
+
+        // View Document
+        function viewDocument(id) {
+            alert('Viewing document: ' + id);
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

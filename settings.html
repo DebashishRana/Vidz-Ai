@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Sentinel - Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <span class="logo-text">KYC Sentinel</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="verifications.html" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span>Verifications</span>
+                </a>
+                <a href="alerts.html" class="nav-item">
+                    <span class="nav-icon">⚠️</span>
+                    <span>Flagged Alerts</span>
+                </a>
+                <a href="documents.html" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Documents</span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item active">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="weather-widget">
+                    <span>31°C</span>
+                    <span>Mostly sunny</span>
+                </div>
+                
+                <div class="user-info" onclick="window.location.href='dashboard.html'">
+                    <div class="user-avatar" id="profileAvatar">RA</div>
+                    <div class="user-details">
+                        <span class="user-name" id="profileName">Ravi Kumar</span>
+                        <span class="user-role" id="profileRole">Compliance Officer</span>
+                    </div>
+                </div>
+                
+                <button class="logout-btn" onclick="logout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>Settings</h1>
+                </div>
+                <div class="top-actions">
+                    <button class="dark-mode-toggle" onclick="toggleDarkMode()" id="darkModeToggle">
+                        🌙
+                    </button>
+                    <button class="icon-btn">🔔</button>
+                    <button class="profile-btn" id="headerProfileBtn">RA</button>
+                </div>
+            </div>
+
+            <!-- Settings Navigation -->
+            <div class="settings-modern-nav">
+                <button class="settings-nav-btn active" onclick="switchSettingsTab('general', event)">
+                    <span>⚙️</span> General
+                </button>
+                <button class="settings-nav-btn" onclick="switchSettingsTab('ai', event)">
+                    <span>🧠</span> AI Models
+                </button>
+                <button class="settings-nav-btn" onclick="switchSettingsTab('security', event)">
+                    <span>🔒</span> Security
+                </button>
+                <button class="settings-nav-btn" onclick="switchSettingsTab('api', event)">
+                    <span>🔌</span> API
+                </button>
+                <button class="settings-nav-btn" onclick="switchSettingsTab('team', event)">
+                    <span>👥</span> Team
+                </button>
+                <button class="settings-nav-btn" onclick="switchSettingsTab('notifications', event)">
+                    <span>🔔</span> Notifications
+                </button>
+            </div>
+
+            <!-- General Settings Panel -->
+            <div id="general-settings" class="settings-panel-modern active">
+                <div class="settings-card">
+                    <h2>General Settings</h2>
+                    
+                    <div class="settings-grid">
+                        <div class="settings-item">
+                            <label>Company Name</label>
+                            <div class="settings-value">
+                                <input type="text" class="modern-input" value="KYC Sentinel AI" id="companyName">
+                                <button class="edit-btn" onclick="editField('companyName')">✏️</button>
+                            </div>
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Contact Email</label>
+                            <div class="settings-value">
+                                <input type="email" class="modern-input" value="admin@kyc-sentinel.ai" id="contactEmail">
+                                <button class="edit-btn" onclick="editField('contactEmail')">✏️</button>
+                            </div>
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Timezone</label>
+                            <select class="modern-select" id="timezone">
+                                <option selected>UTC (Coordinated Universal Time)</option>
+                                <option>EST (Eastern Standard Time)</option>
+                                <option>PST (Pacific Standard Time)</option>
+                                <option>IST (Indian Standard Time)</option>
+                            </select>
+                        </div>
+
+                        <div class="settings-item">
+                            <label>Language</label>
+                            <select class="modern-select" id="language">
+                                <option selected>English (US)</option>
+                                <option>English (UK)</option>
+                                <option>Spanish</option>
+                                <option>French</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="save-settings-btn" onclick="saveSettings()">
+                            <span>💾</span> Save Changes
+                        </button>
+                        <button class="reset-btn" onclick="resetSettings()">
+                            <span>↺</span> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Models Panel -->
+            <div id="ai-settings" class="settings-panel-modern">
+                <div class="settings-card">
+                    <h2>AI Model Configuration</h2>
+                    
+                    <div class="settings-item">
+                        <label>Face Recognition Model</label>
+                        <select class="modern-select" id="faceModel">
+                            <option selected>DeepFace v2.0 (Recommended)</option>
+                            <option>FaceNet v1.5</option>
+                            <option>ArcFace v3.0</option>
+                        </select>
+                    </div>
+
+                    <div class="settings-item">
+                        <label>Document Verification Model</label>
+                        <select class="modern-select" id="docModel">
+                            <option selected>OCR Plus v4.0 (Recommended)</option>
+                            <option>DocVerify v2.3</option>
+                            <option>TextExtract Pro</option>
+                        </select>
+                    </div>
+
+                    <div class="settings-item">
+                        <label>Fraud Detection Sensitivity</label>
+                        <div class="slider-modern">
+                            <input type="range" min="0" max="100" value="75" class="slider-input" id="fraudSensitivity" oninput="updateSliderValue('fraudSensitivity', 'fraudValue')">
+                            <span class="slider-value" id="fraudValue">75%</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-item">
+                        <label>Liveness Detection Threshold</label>
+                        <div class="slider-modern">
+                            <input type="range" min="0" max="100" value="85" class="slider-input" id="livenessThreshold" oninput="updateSliderValue('livenessThreshold', 'livenessValue')">
+                            <span class="slider-value" id="livenessValue">85%</span>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="save-settings-btn" onclick="saveSettings()">
+                            <span>💾</span> Save Changes
+                        </button>
+                        <button class="test-btn" onclick="testAIModel()">
+                            <span>🧪</span> Test Model
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings Panel -->
+            <div id="security-settings" class="settings-panel-modern">
+                <div class="settings-card">
+                    <h2>Security Settings</h2>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-row">
+                            <span>Two-Factor Authentication</span>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="twoFactor" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="toggle-row">
+                            <span>Session Timeout (minutes)</span>
+                            <input type="number" class="modern-input small" value="30" id="sessionTimeout" min="5" max="120">
+                        </div>
+                        
+                        <div class="toggle-row">
+                            <span>Password Policy</span>
+                            <select class="modern-select small" id="passwordPolicy">
+                                <option selected>Strong (Recommended)</option>
+                                <option>Medium</option>
+                                <option>Basic</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-item">
+                        <label>IP Whitelist</label>
+                        <textarea class="modern-textarea" rows="4" id="ipWhitelist" placeholder="Enter IP addresses, one per line">192.168.1.1
+10.0.0.1
+172.16.0.1</textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="save-settings-btn" onclick="saveSettings()">
+                            <span>💾</span> Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- API Configuration Panel -->
+            <div id="api-settings" class="settings-panel-modern">
+                <div class="settings-card">
+                    <h2>API Configuration</h2>
+                    
+                    <div class="api-key-section">
+                        <label>API Key (Backend Managed)</label>
+                        <div class="api-key-display">
+                            <input type="text" class="modern-input" value="kyc_sentinel_live_8x7f9k3m2n5p" readonly id="apiKey">
+                            <button class="copy-btn" onclick="copyAPIKey()">
+                                <span>📋</span> Copy
+                            </button>
+                            <span class="backend-badge">🔒 Backend Managed</span>
+                        </div>
+                        <p class="api-note">API keys are managed by backend team. Contact devops@kyc-sentinel.ai for changes.</p>
+                    </div>
+
+                    <div class="settings-item">
+                        <label>API Endpoint</label>
+                        <input type="url" class="modern-input" value="https://api.kyc-sentinel.ai/v1" readonly id="apiEndpoint">
+                    </div>
+
+                    <div class="settings-grid">
+                        <div class="settings-item">
+                            <label>Rate Limit (requests/second)</label>
+                            <input type="number" class="modern-input" value="100" id="rateLimit" min="10" max="1000">
+                        </div>
+                        
+                        <div class="settings-item">
+                            <label>Timeout (ms)</label>
+                            <input type="number" class="modern-input" value="5000" id="timeout" min="1000" step="1000">
+                        </div>
+                    </div>
+
+                    <div class="settings-item">
+                        <label>Webhook URL</label>
+                        <input type="url" class="modern-input" value="https://your-server.com/webhook" id="webhookUrl" placeholder="Enter webhook URL">
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="save-settings-btn" onclick="saveSettings()">
+                            <span>💾</span> Save Changes
+                        </button>
+                        <button class="test-btn" onclick="testAPI()">
+                            <span>🔌</span> Test Connection
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Team Management Panel -->
+            <div id="team-settings" class="settings-panel-modern">
+                <div class="settings-card">
+                    <div class="card-header">
+                        <h2>Team Management</h2>
+                        <button class="add-member-btn" onclick="openAddMemberModal()">
+                            <span>➕</span> Add Member
+                        </button>
+                    </div>
+                    
+                    <div class="team-list-modern" id="teamList">
+                        <!-- Team members will be loaded here -->
+                    </div>
+
+                    <div class="invite-section">
+                        <h3>Invite New Member</h3>
+                        <div class="invite-form">
+                            <input type="email" class="modern-input" placeholder="Enter email address" id="inviteEmail">
+                            <select class="modern-select" id="inviteRole">
+                                <option>Compliance Officer</option>
+                                <option>Reviewer</option>
+                                <option>Viewer</option>
+                                <option>Administrator</option>
+                            </select>
+                            <button class="send-invite-btn" onclick="sendInvite()">
+                                <span>📧</span> Send Invite
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications Settings Panel -->
+            <div id="notifications-settings" class="settings-panel-modern">
+                <div class="settings-card">
+                    <h2>Notification Preferences</h2>
+                    
+                    <div class="toggle-group">
+                        <div class="toggle-row">
+                            <span>Email Notifications</span>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="emailNotify" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="toggle-row">
+                            <span>High Risk Alerts</span>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="highRiskAlerts" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="toggle-row">
+                            <span>Daily Summary Report</span>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="dailySummary">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        
+                        <div class="toggle-row">
+                            <span>System Updates</span>
+                            <label class="modern-toggle">
+                                <input type="checkbox" id="systemUpdates" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-item">
+                        <label>Notification Email</label>
+                        <input type="email" class="modern-input" value="alerts@kyc-sentinel.ai" id="notificationEmail">
+                    </div>
+
+                    <div class="settings-item">
+                        <label>Alert Threshold</label>
+                        <select class="modern-select" id="alertThreshold">
+                            <option>All Alerts</option>
+                            <option selected>High Risk Only</option>
+                            <option>Medium & High Risk</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="save-settings-btn" onclick="saveSettings()">
+                            <span>💾</span> Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div id="addMemberModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Team Member</h2>
+                <button class="close-btn" onclick="closeAddMemberModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="modern-input" id="memberName" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="modern-input" id="memberEmail" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select class="modern-select" id="memberRole">
+                        <option>Compliance Officer</option>
+                        <option>Reviewer</option>
+                        <option>Viewer</option>
+                        <option>Administrator</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <input type="text" class="modern-input" id="memberDepartment" placeholder="Enter department" value="Compliance">
+                </div>
+                <div class="form-actions">
+                    <button class="cancel-btn" onclick="closeAddMemberModal()">Cancel</button>
+                    <button class="save-btn" onclick="addTeamMember()">Add Member</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Member Modal -->
+    <div id="editMemberModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Team Member</h2>
+                <button class="close-btn" onclick="closeEditMemberModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editMemberId">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" class="modern-input" id="editMemberName" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="modern-input" id="editMemberEmail" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label>Role</label>
+                    <select class="modern-select" id="editMemberRole">
+                        <option>Compliance Officer</option>
+                        <option>Reviewer</option>
+                        <option>Viewer</option>
+                        <option>Administrator</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Department</label>
+                    <input type="text" class="modern-input" id="editMemberDepartment" placeholder="Enter department">
+                </div>
+                <div class="form-actions">
+                    <button class="cancel-btn" onclick="closeEditMemberModal()">Cancel</button>
+                    <button class="save-btn" onclick="updateTeamMember()">Update Member</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get current user from localStorage
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || {
+            name: 'Ravi Kumar',
+            role: 'Compliance Officer',
+            email: 'ravi.kumar@kyc-sentinel.ai'
+        };
+        
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        
+        let teamMembers = JSON.parse(localStorage.getItem('teamMembers')) || [
+            {
+                id: 1,
+                name: 'Ravi Kumar',
+                email: 'ravi.kumar@kyc-sentinel.ai',
+                role: 'Administrator',
+                department: 'IT Security',
+                avatar: 'RK'
+            },
+            {
+                id: 2,
+                name: 'Amulya Reddy',
+                email: 'amulya.reddy@kyc-sentinel.ai',
+                role: 'Compliance Officer',
+                department: 'Compliance',
+                avatar: 'AR'
+            },
+            {
+                id: 3,
+                name: 'Geetha Prasad',
+                email: 'geetha.prasad@kyc-sentinel.ai',
+                role: 'Reviewer',
+                department: 'Review Team',
+                avatar: 'GP'
+            },
+            {
+                id: 4,
+                name: 'Ravi Sharma',
+                email: 'ravi.sharma@kyc-sentinel.ai',
+                role: 'Compliance Officer',
+                department: 'Compliance',
+                avatar: 'RS'
+            },
+            {
+                id: 5,
+                name: 'Karthik Nair',
+                email: 'karthik.nair@kyc-sentinel.ai',
+                role: 'Reviewer',
+                department: 'Quality Assurance',
+                avatar: 'KN'
+            },
+            {
+                id: 6,
+                name: 'Dhanasri Varma',
+                email: 'dhanasri.varma@kyc-sentinel.ai',
+                role: 'Compliance Officer',
+                department: 'Compliance',
+                avatar: 'DV'
+            },
+            {
+                id: 7,
+                name: 'Neha Singh',
+                email: 'neha.singh@kyc-sentinel.ai',
+                role: 'Reviewer',
+                department: 'Review Team',
+                avatar: 'NS'
+            },
+            {
+                id: 8,
+                name: 'Murali Krishna',
+                email: 'murali.krishna@kyc-sentinel.ai',
+                role: 'Administrator',
+                department: 'IT Security',
+                avatar: 'MK'
+            }
+        ];
+
+        // Dark Mode Toggle
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const toggleBtn = document.getElementById('darkModeToggle');
+            if (document.body.classList.contains('dark-mode')) {
+                toggleBtn.textContent = '☀️';
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                toggleBtn.textContent = '🌙';
+                localStorage.setItem('darkMode', 'disabled');
+            }
+        }
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').textContent = '☀️';
+        }
+
+        // Initialize profile
+        function initProfile() {
+            const profileName = document.getElementById('profileName');
+            const profileRole = document.getElementById('profileRole');
+            const profileAvatar = document.getElementById('profileAvatar');
+            const headerProfileBtn = document.getElementById('headerProfileBtn');
+            
+            if (profileName) profileName.textContent = currentUser.name || 'Ravi Kumar';
+            if (profileRole) profileRole.textContent = currentUser.role || 'Compliance Officer';
+            
+            const initials = (currentUser.name || 'Ravi Kumar').split(' ').map(n => n[0]).join('').toUpperCase();
+            if (profileAvatar) profileAvatar.textContent = initials;
+            if (headerProfileBtn) headerProfileBtn.textContent = initials;
+        }
+
+        // Load team members
+        function loadTeamMembers() {
+            const teamList = document.getElementById('teamList');
+            if (!teamList) return;
+            
+            teamList.innerHTML = '';
+            
+            teamMembers.forEach(member => {
+                const memberCard = document.createElement('div');
+                memberCard.className = 'team-member-card';
+                
+                const roleClass = member.role.toLowerCase().replace(' ', '-');
+                
+                memberCard.innerHTML = `
+                    <div class="member-avatar">${member.avatar}</div>
+                    <div class="member-info">
+                        <h4>${member.name}</h4>
+                        <p>${member.email}</p>
+                        <span class="member-badge ${roleClass}">${member.role}</span>
+                        <span class="member-department">${member.department}</span>
+                    </div>
+                    <div class="member-actions">
+                        <button class="icon-btn-small" onclick="openEditMemberModal(${member.id})">✏️</button>
+                        <button class="icon-btn-small" onclick="removeMember(${member.id})">🗑️</button>
+                    </div>
+                `;
+                teamList.appendChild(memberCard);
+            });
+        }
+
+        // Switch settings tabs
+        function switchSettingsTab(tabName, event) {
+            document.querySelectorAll('.settings-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.settings-panel-modern').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+            
+            const selectedPanel = document.getElementById(tabName + '-settings');
+            if (selectedPanel) {
+                selectedPanel.classList.add('active');
+            }
+            
+            if (tabName === 'team') {
+                setTimeout(loadTeamMembers, 100);
+            }
+        }
+
+        // Update slider values
+        function updateSliderValue(sliderId, valueId) {
+            const slider = document.getElementById(sliderId);
+            const value = document.getElementById(valueId);
+            if (slider && value) {
+                value.textContent = slider.value + '%';
+            }
+        }
+
+        // Edit field
+        function editField(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.removeAttribute('readonly');
+                field.focus();
+            }
+        }
+
+        // Save settings
+        function saveSettings() {
+            showNotification('Settings saved successfully!', 'success');
+        }
+
+        // Reset settings
+        function resetSettings() {
+            if (confirm('Reset all settings to default?')) {
+                showNotification('Settings reset to default', 'info');
+            }
+        }
+
+        // Test AI Model
+        function testAIModel() {
+            showNotification('Testing AI Model...', 'info');
+            setTimeout(() => {
+                showNotification('AI Model test completed successfully!', 'success');
+            }, 2000);
+        }
+
+        // Test API Connection
+        function testAPI() {
+            showNotification('Testing API connection...', 'info');
+            setTimeout(() => {
+                showNotification('API connection successful!', 'success');
+            }, 2000);
+        }
+
+        // Copy API Key
+        function copyAPIKey() {
+            const apiKey = document.getElementById('apiKey');
+            if (apiKey) {
+                apiKey.select();
+                document.execCommand('copy');
+                showNotification('API Key copied to clipboard!', 'success');
+            }
+        }
+
+        // Open add member modal
+        function openAddMemberModal() {
+            const modal = document.getElementById('addMemberModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Close add member modal
+        function closeAddMemberModal() {
+            const modal = document.getElementById('addMemberModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Open edit member modal
+        function openEditMemberModal(id) {
+            const member = teamMembers.find(m => m.id === id);
+            if (!member) return;
+            
+            document.getElementById('editMemberId').value = member.id;
+            document.getElementById('editMemberName').value = member.name;
+            document.getElementById('editMemberEmail').value = member.email;
+            document.getElementById('editMemberRole').value = member.role;
+            document.getElementById('editMemberDepartment').value = member.department;
+            
+            const modal = document.getElementById('editMemberModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        // Close edit member modal
+        function closeEditMemberModal() {
+            const modal = document.getElementById('editMemberModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Add team member
+        function addTeamMember() {
+            const name = document.getElementById('memberName')?.value;
+            const email = document.getElementById('memberEmail')?.value;
+            const role = document.getElementById('memberRole')?.value;
+            const department = document.getElementById('memberDepartment')?.value;
+            
+            if (!name || !email) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            const newMember = {
+                id: teamMembers.length + 1,
+                name: name,
+                email: email,
+                role: role,
+                department: department,
+                avatar: name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
+            };
+            
+            teamMembers.push(newMember);
+            localStorage.setItem('teamMembers', JSON.stringify(teamMembers));
+            
+            loadTeamMembers();
+            closeAddMemberModal();
+            showNotification('Team member added successfully!', 'success');
+            
+            const memberName = document.getElementById('memberName');
+            const memberEmail = document.getElementById('memberEmail');
+            if (memberName) memberName.value = '';
+            if (memberEmail) memberEmail.value = '';
+        }
+
+        // Update team member
+        function updateTeamMember() {
+            const id = parseInt(document.getElementById('editMemberId').value);
+            const name = document.getElementById('editMemberName').value;
+            const email = document.getElementById('editMemberEmail').value;
+            const role = document.getElementById('editMemberRole').value;
+            const department = document.getElementById('editMemberDepartment').value;
+            
+            if (!name || !email) {
+                showNotification('Please fill in all fields', 'error');
+                return;
+            }
+            
+            const index = teamMembers.findIndex(m => m.id === id);
+            if (index !== -1) {
+                teamMembers[index] = {
+                    ...teamMembers[index],
+                    name: name,
+                    email: email,
+                    role: role,
+                    department: department,
+                    avatar: name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2)
+                };
+                
+                localStorage.setItem('teamMembers', JSON.stringify(teamMembers));
+                loadTeamMembers();
+                closeEditMemberModal();
+                showNotification('Team member updated successfully!', 'success');
+            }
+        }
+
+        // Remove member
+        function removeMember(id) {
+            if (confirm('Are you sure you want to remove this team member?')) {
+                teamMembers = teamMembers.filter(m => m.id !== id);
+                localStorage.setItem('teamMembers', JSON.stringify(teamMembers));
+                loadTeamMembers();
+                showNotification('Team member removed', 'success');
+            }
+        }
+
+        // Send invite
+        function sendInvite() {
+            const email = document.getElementById('inviteEmail')?.value;
+            const role = document.getElementById('inviteRole')?.value;
+            
+            if (!email) {
+                showNotification('Please enter an email address', 'error');
+                return;
+            }
+            
+            showNotification(`Invitation sent to ${email}`, 'success');
+            const inviteEmail = document.getElementById('inviteEmail');
+            if (inviteEmail) inviteEmail.value = '';
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                showNotification('Logging out...', 'info');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            initProfile();
+            loadTeamMembers();
+        };
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            const addModal = document.getElementById('addMemberModal');
+            const editModal = document.getElementById('editMemberModal');
+            
+            if (event.target === addModal) {
+                closeAddMemberModal();
+            }
+            if (event.target === editModal) {
+                closeEditMemberModal();
+            }
+        };
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Sentinel - Settings</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">[sidebar same as above]</aside>
+        <main class="main-content">
+            <h1>Settings</h1>
+            <div class="settings-tabs">
+                <button class="tab active">General</button>
+                <button class="tab">AI Models</button>
+                <button class="tab">Security</button>
+                <button class="tab">API</button>
+                <button class="tab">Team</button>
+                <button class="tab">Notifications</button>
+            </div>
+            
+            <div class="settings-panel active">
+                <div class="settings-group">
+                    <h3>General Settings</h3>
+                    <div class="setting-item">
+                        <label>Company Name</label>
+                        <input type="text" value="KYC Sentinel AI" class="modern-input">
+                    </div>
+                    <div class="setting-item">
+                        <label>Contact Email</label>
+                        <input type="email" value="admin@kyc-sentinel.ai" class="modern-input">
+                    </div>
+                    <div class="setting-item">
+                        <label>Timezone</label>
+                        <select class="modern-select"><option>UTC</option></select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Language</label>
+                        <select class="modern-select"><option>English</option></select>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>AI Model Configuration</h3>
+                    <div class="setting-item">
+                        <label>Face Recognition</label>
+                        <select class="modern-select"><option>DeepFace v2.0</option></select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Document Verification</label>
+                        <select class="modern-select"><option>OCR Plus v4.0</option></select>
+                    </div>
+                    <div class="setting-item slider-item">
+                        <label>Fraud Sensitivity <span>75%</span></label>
+                        <input type="range" min="0" max="100" value="75" class="slider">
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>Security Settings</h3>
+                    <div class="setting-item toggle-item">
+                        <label>Two-Factor Authentication</label>
+                        <label class="toggle"><input type="checkbox" checked><span class="slider"></span></label>
+                    </div>
+                    <div class="setting-item">
+                        <label>Session Timeout</label>
+                        <input type="number" value="30" class="modern-input small">
+                    </div>
+                    <div class="setting-item">
+                        <label>Password Policy</label>
+                        <select class="modern-select"><option>Strong</option></select>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>API Configuration</h3>
+                    <div class="api-key-box">
+                        <code>kyc_sentinel_live_8x7f9k3m2</code>
+                        <button class="copy-btn">Copy</button>
+                        <span class="badge">Backend Managed</span>
+                    </div>
+                    <p class="note">Contact devops@kyc-sentinel.ai for changes</p>
+                </div>
+                
+                <div class="form-actions">
+                    <button class="save-btn">Save Changes</button>
+                    <button class="reset-btn">Reset</button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
