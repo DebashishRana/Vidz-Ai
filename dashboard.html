@@ -305,6 +305,8 @@
     </div>
 
     <script>
+        const BACKEND_URL = 'https://ekyc-backend-750223193485.asia-south2.run.app';
+
         // Load current user
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         
@@ -327,7 +329,7 @@
         // Fetch and display dashboard statistics
         async function loadDashboardStats() {
             try {
-                const response = await fetch('http://localhost:8000/stats');
+                const response = await fetch(`${BACKEND_URL}/stats`);
                 const stats = await response.json();
                 
                 // Update stat cards
@@ -461,18 +463,20 @@
                     const formData = new FormData();
                     formData.append('file', file);
                     
-                    // Replace URL with your actual FastAPI endpoint for document detection
-                    const response = await fetch('http://localhost:8000/detect-doc', {
+                    const response = await fetch(`${BACKEND_URL}/detect-document`, {
                         method: 'POST',
                         body: formData
                     });
                     
                     const result = await response.json();
+                    const detections = Array.isArray(result.detections) ? result.detections : [];
+                    const topDetection = detections.length > 0 ? detections[0] : null;
                     
                     // Add result to the table
                     const tr = document.createElement('tr');
                     const reqId = 'REQ-' + Math.floor(Math.random() * 10000);
-                    const isAadhar = result.document_type === 'Aadhar' || result.confidence > 0.7; // Adjust based on your API response structure
+                    const isAadhar = !!topDetection && topDetection.label === 'Aadhar' && Number(topDetection.confidence || 0) > 0.6;
+                    const confidenceDisplay = topDetection ? (Number(topDetection.confidence || 0) * 100).toFixed(1) + '%' : '--';
                     
                     if (isAadhar) aadharFoundCount++;
 
@@ -482,7 +486,7 @@
                         <td>${file.name}</td>
                         <td>${new Date().toLocaleDateString()}</td>
                         <td><span class="status-badge ${isAadhar ? 'success' : 'warning'}">${isAadhar ? 'Detected' : 'Unknown'}</span></td>
-                        <td>${result.confidence ? (result.confidence * 100).toFixed(1) + '%' : '--'}</td>
+                        <td>${confidenceDisplay}</td>
                         <td><button class="small-btn" onclick="reviewCase('${reqId}')">View</button></td>
                     `;
                     tbody.appendChild(tr);

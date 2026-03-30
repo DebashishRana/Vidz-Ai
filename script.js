@@ -146,9 +146,19 @@ function login() {
     
     if (email && password) {
         // Show loading animation
-        const btn = document.querySelector('.login-btn');
+        const btn = document.querySelector('#login-form .login-btn');
         btn.innerHTML = 'Signing in...';
         btn.disabled = true;
+
+        const displayName = email.split('@')[0].replace(/[._-]/g, ' ')
+            .replace(/\b\w/g, c => c.toUpperCase());
+
+        const currentUser = {
+            name: displayName || 'Compliance Officer',
+            email,
+            role: 'Compliance Officer'
+        };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
         
         // Simulate API call
         setTimeout(() => {
@@ -177,16 +187,27 @@ function register() {
     }
     
     // Show loading animation
-    const btn = document.querySelector('.login-btn');
+    const btn = document.querySelector('#register-form .login-btn');
     btn.innerHTML = 'Creating account...';
     btn.disabled = true;
     
     // Simulate API call
     setTimeout(() => {
+        const currentUser = {
+            name,
+            email,
+            role: 'Compliance Officer'
+        };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
         showNotification('Account created successfully! Please login.', 'success');
         switchAuthTab('login');
         btn.innerHTML = 'Create Account';
         btn.disabled = false;
+
+        const loginEmail = document.getElementById('email');
+        if (loginEmail) {
+            loginEmail.value = email;
+        }
     }, 1000);
 }
 

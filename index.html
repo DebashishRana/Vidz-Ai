@@ -3,142 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sequential KYC Verification</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f8f9fa; padding-top: 50px; }
-        .kyc-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .step { display: none; }
-        .step.active { display: block; }
-        .result-box { margin-top: 20px; padding: 15px; border-radius: 5px; display: none; }
-        .alert-fail { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
-        .alert-pass { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
-    </style>
+    <title>Citadel - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="container kyc-container">
-    <h2 class="text-center mb-4">KYC Verification Setup G13-M10</h2>
-    
-    <div id="statusAlert" class="result-box"></div>
-
-    <form id="kycForm">
-        <!-- Input Step -->
-        <div id="step-inputs" class="step active">
-            <div class="mb-3">
-                <label class="form-label">ID Document (Aadhar)</label>
-                <input type="file" id="idDocument" class="form-control" accept="image/jpeg, image/png" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Selfie Photo</label>
-                <input type="file" id="selfiePhoto" class="form-control" accept="image/jpeg, image/png" required>
-            </div>
-            <button type="button" class="btn btn-primary w-100" id="startBtn">Start Verification</button>
+    <div class="login-container">
+        <div class="logo-section">
+            <h1>Citadel KYC</h1>
+            <p>AI-powered identity verification dashboard</p>
         </div>
 
-        <!-- Processing Step -->
-        <div id="step-processing" class="step text-center">
-            <div class="spinner-border text-primary mb-3" role="status"></div>
-            <h5 id="processText">Processing Document...</h5>
+        <div class="login-tabs">
+            <button class="login-tab active" onclick="switchAuthTab('login')">Login</button>
+            <button class="login-tab" onclick="switchAuthTab('register')">Sign Up</button>
         </div>
-    </form>
-</div>
 
-<script>
-const BACKEND_URL = 'https://ekyc-backend-750223193485.asia-south2.run.app';
+        <div id="login-form" class="auth-form active">
+            <h2>Welcome Back</h2>
+            <div class="input-group">
+                <label>Email</label>
+                <input id="email" type="email" placeholder="you@company.com">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input id="password" type="password" placeholder="Enter password">
+            </div>
+            <button class="login-btn" onclick="login()">Sign In</button>
+        </div>
 
-document.getElementById('startBtn').addEventListener('click', async () => {
-    const idFile = document.getElementById('idDocument').files[0];
-    const selfieFile = document.getElementById('selfiePhoto').files[0];
-    const statusAlert = document.getElementById('statusAlert');
-    const processText = document.getElementById('processText');
+        <div id="register-form" class="auth-form">
+            <h2>Create Account</h2>
+            <div class="input-group">
+                <label>Full Name</label>
+                <input id="reg-name" type="text" placeholder="John Doe">
+            </div>
+            <div class="input-group">
+                <label>Email</label>
+                <input id="reg-email" type="email" placeholder="you@company.com">
+            </div>
+            <div class="input-group">
+                <label>Password</label>
+                <input id="reg-password" type="password" placeholder="Create password">
+            </div>
+            <div class="input-group">
+                <label>Confirm Password</label>
+                <input id="reg-confirm" type="password" placeholder="Confirm password">
+            </div>
+            <button class="login-btn" onclick="register()">Create Account</button>
+        </div>
 
-    if (!idFile || !selfieFile) {
-        alert("Please upload both ID and Selfie images.");
-        return;
-    }
+        <div class="signup-link" style="margin-top: 14px; text-align: center;">
+            <a href="dashboard.html">Open Dashboard</a> |
+            <a href="verification_flow.html">Verification Flow</a> |
+            <a href="analytics.html">Analytics</a>
+        </div>
+    </div>
 
-    // UI Reset
-    document.getElementById('step-inputs').classList.remove('active');
-    document.getElementById('step-processing').classList.add('active');
-    statusAlert.style.display = 'none';
-
-    let overallScores = [];
-
-    try {
-        // Step 1: Document Verification
-        processText.innerText = "Step 1: Verifying Document...";
-        let formDataDocs = new FormData();
-        formDataDocs.append("file", idFile);
-
-        const docRes = await fetch(`${BACKEND_URL}/verify-full`, {
-            method: "POST",
-            body: formDataDocs
-        });
-        const docData = await docRes.json();
-
-        if (!docRes.ok || !docData.is_verified) {
-            throw new Error(`Document Validation Failed: ${docData.detail || 'Invalid or unrecognized document type.'}`);
-        }
-        // Normalize risk score (lower risk = higher confidence). Assuming risk 0-100.
-        overallScores.push((100 - docData.risk_score) / 100);
-
-        // Step 2: Face Verification
-        processText.innerText = "Step 2: Verifying Face...";
-        let formDataFace = new FormData();
-        formDataFace.append("id_photo", idFile);
-        formDataFace.append("selfie", selfieFile);
-
-        const faceRes = await fetch(`${BACKEND_URL}/verify-face`, {
-            method: "POST",
-            body: formDataFace
-        });
-        const faceData = await faceRes.json();
-
-        if (!faceRes.ok || !faceData.match) {
-            throw new Error("Face Validation Failed: Mismatch between ID and Selfie.");
-        }
-        overallScores.push(faceData.confidence);
-
-        // Step 3: Address Detection
-        processText.innerText = "Step 3: Detecting Address...";
-        let formDataAddress = new FormData();
-        formDataAddress.append("file", idFile);
-
-        const addrRes = await fetch(`${BACKEND_URL}/detect/address`, {
-            method: "POST",
-            body: formDataAddress
-        });
-        const addrData = await addrRes.json();
-
-        if (!addrRes.ok) {
-            throw new Error("Address Detection Failed.");
-        }
-        // Use Address confidence if provided, else assume 1.0 on success
-        overallScores.push(addrData.confidence || 0.8); 
-
-        // Final Evaluation
-        const avgConfidence = overallScores.reduce((a, b) => a + b, 0) / overallScores.length;
-
-        if (avgConfidence >= 0.75) {
-            showResult(`✅ KYC PASSED! Overall Confidence: ${(avgConfidence * 100).toFixed(1)}%`, true);
-        } else {
-            showResult(`❌ KYC FAILED! Overall Confidence: ${(avgConfidence * 100).toFixed(1)}% (Threshold: 75%)`, false);
-        }
-
-    } catch (error) {
-        showResult(`❌ Verification Terminated: ${error.message}`, false);
-    }
-});
-
-function showResult(message, isSuccess) {
-    document.getElementById('step-processing').classList.remove('active');
-    document.getElementById('step-inputs').classList.add('active');
-    
-    const alertBox = document.getElementById('statusAlert');
-    alertBox.style.display = 'block';
-    alertBox.className = `result-box ${isSuccess ? 'alert-pass' : 'alert-fail'}`;
-    alertBox.innerText = message;
-}
-</script>
+    <script src="script.js"></script>
 </body>
 </html>
