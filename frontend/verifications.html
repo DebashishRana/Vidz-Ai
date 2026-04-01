@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citadel - Records</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <span class="logo-text">Citadel</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="verifications.html" class="nav-item active">
+                    <span class="nav-icon">✓</span>
+                    <span>Verification Logs</span>
+                </a>
+                <a href="alerts.html" class="nav-item">
+                    <span class="nav-icon">⚠️</span>
+                    <span>Flagged Alerts</span>
+                </a>
+                <a href="verification_flow.html" class="nav-item" style="display: flex !important;">
+                    <span class="nav-icon">🔄</span>
+                    <span>New KYC Flow</span>
+                </a>
+                <a href="documents.html" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Manual Checking
+                    </span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <!-- WEATHER WIDGET REMOVED -->
+                
+                <div class="user-info" onclick="window.location.href='dashboard.html'">
+                    <div class="user-avatar" id="profileAvatar"></div>
+                    <div class="user-details">
+                        <span class="user-name" id="profileName"></span>
+                        <span class="user-role" id="profileRole"></span>
+                    </div>
+                </div>
+                
+                <button class="logout-btn" onclick="logout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1>Verifications</h1>
+            
+            <!-- Filters Bar -->
+            <div class="filters-bar">
+                <div class="search-box">
+                    <input type="text" placeholder="Search verifications..." class="search-input">
+                </div>
+                <div class="filter-actions">
+                    <select class="filter-select">
+                        <option>All Status</option>
+                        <option>Verified</option>
+                        <option>Flagged</option>
+                        <option>Pending</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>All Dates</option>
+                        <option>Today</option>
+                        <option>This Week</option>
+                        <option>This Month</option>
+                    </select>
+                    <button class="export-btn" onclick="exportData()">📥 Export</button>
+                </div>
+            </div>
+
+            <!-- Verifications Table with PREVIOUS INDIAN NAMES -->
+            <div class="data-table">
+                <table class="kyc-table">
+                    <thead>
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Applicant</th>
+                            <th>Document Type</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Risk Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>KYC1023</td>
+                            <td>Ravi Kumar</td>
+                            <td>Passport</td>
+                            <td>2024-01-15</td>
+                            <td><span class="status-badge verified">Verified</span></td>
+                            <td>12%</td>
+                            <td><button class="view-btn" onclick="viewDetails('KYC1023')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>KYC1024</td>
+                            <td>Amulya Reddy</td>
+                            <td>Aadhaar Card</td>
+                            <td>2024-01-15</td>
+                            <td><span class="status-badge flagged">Flagged</span></td>
+                            <td>78%</td>
+                            <td><button class="view-btn" onclick="reviewCase('KYC1024')">Review</button></td>
+                        </tr>
+                        <tr>
+                            <td>KYC1025</td>
+                            <td>Geetha Prasad</td>
+                            <td>Utility Bill</td>
+                            <td>2024-01-14</td>
+                            <td><span class="status-badge verified">Verified</span></td>
+                            <td>8%</td>
+                            <td><button class="view-btn" onclick="viewDetails('KYC1025')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>KYC1026</td>
+                            <td>Karthik Nair</td>
+                            <td>Address Proof</td>
+                            <td>2024-01-14</td>
+                            <td><span class="status-badge pending">Pending</span></td>
+                            <td>45%</td>
+                            <td><button class="view-btn" onclick="reviewCase('KYC1026')">Review</button></td>
+                        </tr>
+                        <tr>
+                            <td>KYC1027</td>
+                            <td>Dhanasri Varma</td>
+                            <td>Passport</td>
+                            <td>2024-01-13</td>
+                            <td><span class="status-badge verified">Verified</span></td>
+                            <td>15%</td>
+                            <td><button class="view-btn" onclick="viewDetails('KYC1027')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>KYC1028</td>
+                            <td>Neha Singh</td>
+                            <td>Driver's License</td>
+                            <td>2024-01-13</td>
+                            <td><span class="status-badge flagged">Flagged</span></td>
+                            <td>82%</td>
+                            <td><button class="view-btn" onclick="reviewCase('KYC1028')">Review</button></td>
+                        </tr>
+                        <tr>
+                            <td>KYC1029</td>
+                            <td>Murali Krishna</td>
+                            <td>ID Card</td>
+                            <td>2024-01-12</td>
+                            <td><span class="status-badge pending">Pending</span></td>
+                            <td>35%</td>
+                            <td><button class="view-btn" onclick="reviewCase('KYC1029')">Review</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load current user (YOUR USER)
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        // Update UI with YOUR user data
+        document.getElementById('profileName').textContent = currentUser.name;
+        document.getElementById('profileRole').textContent = currentUser.role;
+        
+        // Generate avatar initials from YOUR name
+        const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('profileAvatar').textContent = initials;
+
+        // Action Functions
+        function viewDetails(id) {
+            alert('Viewing details for ' + id);
+        }
+
+        function reviewCase(id) {
+            alert('Reviewing case ' + id);
+        }
+
+        function exportData() {
+            alert('Data exported successfully!');
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>

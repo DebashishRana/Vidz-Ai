@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KYC Sentinel - Flagged Alerts</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🛡️</div>
+                    <span class="logo-text">KYC Sentinel</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard.html" class="nav-item">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="verifications.html" class="nav-item">
+                    <span class="nav-icon">✓</span>
+                    <span>Verifications</span>
+                </a>
+                <a href="alerts.html" class="nav-item active">
+                    <span class="nav-icon">⚠️</span>
+                    <span>Flagged Alerts</span>
+                </a>
+                <a href="verification_flow.html" class="nav-item" style="display: flex !important;">
+                    <span class="nav-icon">🔄</span>
+                    <span>New KYC Flow</span>
+                </a>
+                <a href="documents.html" class="nav-item">
+                    <span class="nav-icon">📄</span>
+                    <span>Verify Documents
+                        
+                    </span>
+                </a>
+                <a href="analytics.html" class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    <span>Analytics</span>
+                </a>
+                <a href="settings.html" class="nav-item">
+                    <span class="nav-icon">⚙️</span>
+                    <span>Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <!-- WEATHER WIDGET REMOVED -->
+                
+                <div class="user-info" onclick="window.location.href='dashboard.html'">
+                    <div class="user-avatar" id="profileAvatar"></div>
+                    <div class="user-details">
+                        <span class="user-name" id="profileName"></span>
+                        <span class="user-role" id="profileRole"></span>
+                    </div>
+                </div>
+                
+                <button class="logout-btn" onclick="logout()">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1>Flagged Alerts</h1>
+
+            <!-- Alerts Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-content">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">High Risk</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🟡</div>
+                    <div class="stat-content">
+                        <div class="stat-value">24</div>
+                        <div class="stat-label">Medium Risk</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🟢</div>
+                    <div class="stat-content">
+                        <div class="stat-value">18</div>
+                        <div class="stat-label">Low Risk</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-content">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Pending Review</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Table with PREVIOUS INDIAN NAMES -->
+            <div class="data-table">
+                <table class="kyc-table">
+                    <thead>
+                        <tr>
+                            <th>Alert ID</th>
+                            <th>Applicant</th>
+                            <th>Risk Level</th>
+                            <th>Fraud Type</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AL001</td>
+                            <td>Amulya Reddy</td>
+                            <td><span class="risk-score high">High</span></td>
+                            <td>Document Forgery</td>
+                            <td>2024-01-15</td>
+                            <td><span class="status-badge pending">Active</span></td>
+                            <td><button class="view-btn" onclick="reviewAlert('AL001')">Review</button></td>
+                        </tr>
+                        <tr>
+                            <td>AL002</td>
+                            <td>Neha Singh</td>
+                            <td><span class="risk-score high">High</span></td>
+                            <td>Face Mismatch</td>
+                            <td>2024-01-14</td>
+                            <td><span class="status-badge pending">Active</span></td>
+                            <td><button class="view-btn" onclick="reviewAlert('AL002')">Review</button></td>
+                        </tr>
+                        <tr>
+                            <td>AL003</td>
+                            <td>Karthik Nair</td>
+                            <td><span class="risk-score medium">Medium</span></td>
+                            <td>Address Mismatch</td>
+                            <td>2024-01-13</td>
+                            <td><span class="status-badge pending">Active</span></td>
+                            <td><button class="view-btn" onclick="reviewAlert('AL003')">Review</button></td>
+                        </tr>
+                        <tr>
+                            <td>AL004</td>
+                            <td>Murali Krishna</td>
+                            <td><span class="risk-score medium">Medium</span></td>
+                            <td>Duplicate ID</td>
+                            <td>2024-01-13</td>
+                            <td><span class="status-badge verified">Resolved</span></td>
+                            <td><button class="view-btn" onclick="viewAlert('AL004')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>AL005</td>
+                            <td>Dhanasri Varma</td>
+                            <td><span class="risk-score low">Low</span></td>
+                            <td>Expired Document</td>
+                            <td>2024-01-13</td>
+                            <td><span class="status-badge verified">Resolved</span></td>
+                            <td><button class="view-btn" onclick="viewAlert('AL005')">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>AL006</td>
+                            <td>Geetha Prasad</td>
+                            <td><span class="risk-score low">Low</span></td>
+                            <td>Signature Mismatch</td>
+                            <td>2024-01-12</td>
+                            <td><span class="status-badge pending">Active</span></td>
+                            <td><button class="view-btn" onclick="reviewAlert('AL006')">Review</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Load current user (YOUR USER)
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        
+        if (!currentUser) {
+            window.location.href = 'index.html';
+        }
+
+        // Update UI with YOUR user data
+        document.getElementById('profileName').textContent = currentUser.name;
+        document.getElementById('profileRole').textContent = currentUser.role;
+        
+        // Generate avatar initials from YOUR name
+        const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+        document.getElementById('profileAvatar').textContent = initials;
+
+        // Alert Functions
+        function reviewAlert(id) {
+            alert('Reviewing alert: ' + id);
+        }
+
+        function viewAlert(id) {
+            alert('Viewing alert: ' + id);
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
