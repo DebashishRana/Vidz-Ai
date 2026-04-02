@@ -96,16 +96,17 @@
                     <thead>
                         <tr>
                             <th>Request ID</th>
-                            <th>Applicant</th>
-                            <th>Email</th>
                             <th>Document Type</th>
-                            <th>Date</th>
+                            <th>Confidence Score</th>
                             <th>Status</th>
-                            <th>Risk Score</th>
+                            <th>Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="verificationsTableBody">
+                        <tr style="text-align: center; color: #9ca3af;">
+                            <td colspan="6">Loading verification records...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -114,36 +115,163 @@
 
     <script src="script.js"></script>
     <script>
-        // Load current user (YOUR USER)
+        const BACKEND_URL = 'http://localhost:8080';
+        
+        // Load current user
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         
         if (!currentUser) {
             window.location.href = 'index.html';
         }
 
-        // Update UI with YOUR user data
+        // Update UI with user data
         document.getElementById('profileName').textContent = currentUser.name;
         document.getElementById('profileRole').textContent = currentUser.role;
         
-        // Generate avatar initials from YOUR name
+        // Generate avatar initials
         const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
         document.getElementById('profileAvatar').textContent = initials;
 
-        // Action Functions
-        function viewDetails(id) {
-            alert('Viewing details for ' + id);
+        // State
+        let allVerifications = [];
+        let currentPage = 0;
+        const pageSize = 50;
+
+        // Load verifications on page load
+        async function loadVerifications() {
+            try {
+                const response = await fetch(`${BACKEND_URL}/verifications?limit=${pageSize}&offset=${currentPage * pageSize}`);
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                allVerifications = data.data;
+                
+                console.log('Loaded verifications:', allVerifications);
+                renderTable();
+                
+            } catch (error) {
+                console.error('Error loading verifications:', error);
+                document.getElementById('verificationsTableBody').innerHTML = `
+                    <tr style="text-align: center; color: #ef4444;">
+                        <td colspan="6">Error loading verification records. Make sure backend is running on port 8080.</td>
+                    </tr>
+                `;
+            }
         }
 
-        function reviewCase(id) {
-            if (typeof viewDetails === 'function') {
-                viewDetails(id);
-            } else {
-                alert('Reviewing case ' + id);
+        function renderTable() {
+            const tbody = document.getElementById('verificationsTableBody');
+            
+            if (allVerifications.length === 0) {
+                tbody.innerHTML = `
+                    <tr style="text-align: center; color: #9ca3af;">
+                        <td colspan="6">No verifications found</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = allVerifications.map(record => {
+                const statusColor = record.status === 'Verified' ? '#10b981' : 
+                                  record.status === 'Review Required' ? '#f59e0b' : '#ef4444';
+                const statusBg = record.status === 'Verified' ? '#d1fae5' : 
+                               record.status === 'Review Required' ? '#fef3c7' : '#fee2e2';
+                
+                const date = new Date(record.created_at);
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+
+                return `
+                    <tr>
+                        <td style="font-weight: 500; color: #111827; cursor: pointer;" onclick="viewDetails('${record.verification_id}')">
+                            ${record.verification_id.substring(0, 12)}...
+                        </td>
+                        <td>${record.document_type || 'Unknown'}</td>
+                        <td>
+                            <div style="font-weight: 600; color: #059669; font-size: 14px;">
+                                ${Math.round(record.confidence_score * 100)}%
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: inline-block; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; background-color: ${statusBg}; color: ${statusColor};">
+                                ${record.status}
+                            </div>
+                        </td>
+                        <td style="color: #6b7280; font-size: 14px;">
+                            ${formattedDate}
+                        </td>
+                        <td>
+                            <button onclick="viewDetails('${record.verification_id}')" style="background: #0d9488; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500;">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function viewDetails(verification_id) {
+            try {
+                const response = await fetch(`${BACKEND_URL}/verifications/${verification_id}`);
+                
+                if (!response.ok) {
+                    throw new Error(`API error: ${response.status}`);
+                }
+                
+                const detail = await response.json();
+                
+                // Create a modal or navigate to detail page
+                const detailsText = `
+ID: ${detail.verification_id}
+Document Type: ${detail.document_type}
+Confidence Score: ${(detail.confidence_score * 100).toFixed(1)}%
+Status: ${detail.status}
+Address: ${detail.detected_address || 'Not detected'}
+Created: ${new Date(detail.created_at).toLocaleString()}
+                `;
+                
+                alert(detailsText);
+                
+            } catch (error) {
+                console.error('Error viewing details:', error);
+                alert('Error loading verification details');
             }
         }
 
         function exportData() {
-            alert('Data exported successfully!');
+            if (allVerifications.length === 0) {
+                alert('No data to export');
+                return;
+            }
+
+            // Create CSV content
+            const headers = ['Request ID', 'Document Type', 'Confidence Score', 'Status', 'Date', 'Address'];
+            const csvContent = [
+                headers.join(','),
+                ...allVerifications.map(record => [
+                    record.verification_id,
+                    record.document_type,
+                    record.confidence_score,
+                    record.status,
+                    record.created_at,
+                    record.detected_address?.replace(/,/g, ';') || 'Not detected'
+                ].join(','))
+            ].join('\n');
+
+            // Create blob and download
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `verifications_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
         }
 
         function logout() {
@@ -152,6 +280,9 @@
                 window.location.href = 'index.html';
             }
         }
+
+        // Load verifications when page loads
+        loadVerifications();
     </script>
 </body>
 </html>

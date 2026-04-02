@@ -408,20 +408,21 @@ document.getElementById('startBtn').addEventListener('click', async () => {
         } catch(e) { console.error("Error saving image to session storage", e); }
 
         // Confidence Scoring System:
-        // - Document (Aadhar): 0.50
+        // - Document (Aadhar): 0.40
         // - Address Detection: 0.20
         // - Face Match: 0.10
+        // - Face Mismatch: -0.40
         // - No Tampering: 0.20
-        // Total: 1.0
+        // Pass Threshold: 0.50
         
         let totalConfidence = 0;
         
-        // Step 1: Document Score (0.50 for Aadhar)
+        // Step 1: Document Score (0.40 for Aadhar)
         const isAadhar = (detectedDocType.toLowerCase().includes('aadhar') || detectedDocType.toLowerCase().includes('aadhaar'));
         let docScore = 0;
         if (isAadhar && docData.is_verified) {
-            docScore = 0.50;
-            stepsCompleted.push(`Document: ✅ Verified Aadhar (+0.50)`);
+            docScore = 0.40;
+            stepsCompleted.push(`Document: ✅ Verified Aadhar (+0.40)`);
         } else {
             stepsCompleted.push(`Document: ⚠️ Flagged or Invalid`);
         }
@@ -499,8 +500,10 @@ document.getElementById('startBtn').addEventListener('click', async () => {
         if (avgConfidence >= 0.5) {
             // Show results panel
             showResult(`✅ KYC COMPLETED!`, true, idFile, detectedDocType, detectedAddress, avgConfidence, stepsCompleted);
+            saveVerificationRecord(createdVerifyId, detectedDocType, avgConfidence, 'Verified', detectedAddress, stepsCompleted);
         } else {
             showResult(`❌ KYC FAILED!\nConfidence: ${(avgConfidence * 100).toFixed(1)}%\n\n${resultDetails}`, false, idFile, detectedDocType, detectedAddress, avgConfidence, stepsCompleted);
+            saveVerificationRecord(createdVerifyId, detectedDocType, avgConfidence, avgConfidence >= 0.2 ? 'Review Required' : 'Failed', detectedAddress, stepsCompleted);
         }
 
     } catch (error) {
@@ -595,6 +598,46 @@ function showResult(message, isSuccess, uploadedImageFile = null, documentType =
         `;
         stepsContainer.appendChild(stepDiv);
     });
+}
+
+// Function to save verification record to backend
+async function saveVerificationRecord(verifyId, docType, score, status, address, steps) {
+    try {
+        const verificationDetails = {
+            steps: steps,
+            scores: {
+                document: score >= 0.40 ? 0.40 : 0,
+                address: score >= 0.60 ? 0.20 : (score >= 0.40 ? 0.20 : 0),
+                face: 0,
+                tampering: score >= 0.80 ? 0.20 : 0
+            }
+        };
+
+        const payload = {
+            verification_id: verifyId,
+            document_type: docType,
+            confidence_score: Math.max(0, score),
+            status: status,
+            detected_address: address,
+            verification_details: verificationDetails
+        };
+
+        const response = await fetch(`${BACKEND_URL}/save-verification`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Verification record saved:', data);
+            sessionStorage.setItem('last_verification_id', verifyId);
+        } else {
+            console.error('Failed to save verification record:', response.status);
+        }
+    } catch (error) {
+        console.error('Error saving verification record:', error);
+    }
 }
 </script>
 </body>
