@@ -37,12 +37,6 @@
                     <span class="nav-icon">🔄</span>
                     <span>New KYC Flow</span>
                 </a>
-                <a href="documents.html" class="nav-item">
-                    <span class="nav-icon">📄</span>
-                    <span>Verify Documents
-                        
-                    </span>
-                </a>
                 <a href="analytics.html" class="nav-item">
                     <span class="nav-icon">📈</span>
                     <span>Analytics</span>
@@ -120,67 +114,14 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>AL001</td>
-                            <td>Amulya Reddy</td>
-                            <td><span class="risk-score high">High</span></td>
-                            <td>Document Forgery</td>
-                            <td>2024-01-15</td>
-                            <td><span class="status-badge pending">Active</span></td>
-                            <td><button class="view-btn" onclick="reviewAlert('AL001')">Review</button></td>
-                        </tr>
-                        <tr>
-                            <td>AL002</td>
-                            <td>Neha Singh</td>
-                            <td><span class="risk-score high">High</span></td>
-                            <td>Face Mismatch</td>
-                            <td>2024-01-14</td>
-                            <td><span class="status-badge pending">Active</span></td>
-                            <td><button class="view-btn" onclick="reviewAlert('AL002')">Review</button></td>
-                        </tr>
-                        <tr>
-                            <td>AL003</td>
-                            <td>Karthik Nair</td>
-                            <td><span class="risk-score medium">Medium</span></td>
-                            <td>Address Mismatch</td>
-                            <td>2024-01-13</td>
-                            <td><span class="status-badge pending">Active</span></td>
-                            <td><button class="view-btn" onclick="reviewAlert('AL003')">Review</button></td>
-                        </tr>
-                        <tr>
-                            <td>AL004</td>
-                            <td>Murali Krishna</td>
-                            <td><span class="risk-score medium">Medium</span></td>
-                            <td>Duplicate ID</td>
-                            <td>2024-01-13</td>
-                            <td><span class="status-badge verified">Resolved</span></td>
-                            <td><button class="view-btn" onclick="viewAlert('AL004')">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>AL005</td>
-                            <td>Dhanasri Varma</td>
-                            <td><span class="risk-score low">Low</span></td>
-                            <td>Expired Document</td>
-                            <td>2024-01-13</td>
-                            <td><span class="status-badge verified">Resolved</span></td>
-                            <td><button class="view-btn" onclick="viewAlert('AL005')">View</button></td>
-                        </tr>
-                        <tr>
-                            <td>AL006</td>
-                            <td>Geetha Prasad</td>
-                            <td><span class="risk-score low">Low</span></td>
-                            <td>Signature Mismatch</td>
-                            <td>2024-01-12</td>
-                            <td><span class="status-badge pending">Active</span></td>
-                            <td><button class="view-btn" onclick="reviewAlert('AL006')">Review</button></td>
-                        </tr>
+                    <tbody id="alertsTableBody">
                     </tbody>
                 </table>
             </div>
         </main>
     </div>
 
+    <script src="script.js"></script>
     <script>
         // Load current user (YOUR USER)
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));

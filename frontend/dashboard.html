@@ -37,10 +37,6 @@
                     <span class="nav-icon">🔄</span>
                     <span>New KYC Flow</span>
                 </a>
-                <a href="documents.html" class="nav-item">
-                    <span class="nav-icon">📄</span>
-                    <span>Documents</span>
-                </a>
                 <a href="analytics.html" class="nav-item">
                     <span class="nav-icon">📈</span>
                     <span>Analytics</span>
@@ -80,8 +76,8 @@
                     <button class="action-btn primary" onclick="triggerUpload()">📤 Upload Batch
                 
                     </button>
-                    <button class="action-btn success" onclick="verifyAll()">✅ Verify All</button>
-                    <button class="action-btn warning" onclick="flagSuspicious()">⚠️ Flag Suspicious</button>
+                    <button class="action-btn success" onclick="window.location.href='verifications.html'">✅ View Verified</button>
+                    <button class="action-btn warning" onclick="window.location.href='alerts.html'">⚠️ View Suspicious</button>
                     <button class="action-btn secondary" onclick="exportReport()">📊 Export</button>
                     <button class="action-btn secondary" onclick="refreshDashboard()">🔄 Refresh</button>
                     <button class="dark-mode-toggle" onclick="toggleDarkMode()" id="darkModeToggle">🌙</button>
@@ -104,7 +100,7 @@
                 <div class="stat-card">
                     <div class="stat-icon">📊</div>
                     <div class="stat-content">
-                        <div class="stat-value">0</div>
+                        <div class="stat-value" id="totalApps">0</div>
                         <div class="stat-label">Total Verifications</div>
                     </div>
                     <div class="stat-trend">0.0%</div>
@@ -112,7 +108,7 @@
                 <div class="stat-card">
                     <div class="stat-icon">✓</div>
                     <div class="stat-content">
-                        <div class="stat-value">0</div>
+                        <div class="stat-value" id="verifiedCount">0</div>
                         <div class="stat-label">Verified</div>
                     </div>
                     <div class="stat-trend">0.0%</div>
@@ -120,7 +116,7 @@
                 <div class="stat-card">
                     <div class="stat-icon">⚠️</div>
                     <div class="stat-content">
-                        <div class="stat-value">0</div>
+                        <div class="stat-value" id="flaggedCount">0</div>
                         <div class="stat-label">Flagged</div>
                     </div>
                     <div class="stat-trend">0.0%</div>
@@ -128,7 +124,7 @@
                 <div class="stat-card">
                     <div class="stat-icon">⏳</div>
                     <div class="stat-content">
-                        <div class="stat-value">0</div>
+                        <div class="stat-value" id="pendingCount">0</div>
                         <div class="stat-label">Pending</div>
                     </div>
                     <div class="stat-trend">0.0%</div>
@@ -157,7 +153,7 @@
                                 <th>Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="kycTableBody">
                             <tr>
                                 <td colspan="7" style="text-align: center; color: #6b7280; padding: 20px;">No recent verifications available</td>
                             </tr>
@@ -304,75 +300,14 @@
         </div>
     </div>
 
+    <script src="script.js"></script>
     <script>
-        const BACKEND_URL = 'https://ekyc-backend-750223193485.asia-south2.run.app';
-
-        // Load current user
-        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        
-        if (!currentUser) {
-            window.location.href = 'index.html';
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').textContent = '☀️';
         }
 
-        // Update UI with user data
-        function updateUserUI() {
-            document.getElementById('profileName').textContent = currentUser.name;
-            document.getElementById('profileRole').textContent = currentUser.role;
-            
-            const initials = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
-            document.getElementById('profileAvatar').textContent = initials;
-            document.getElementById('headerProfileBtn').textContent = initials;
-        }
-        
-        updateUserUI();
-
-        // Fetch and display dashboard statistics
-        async function loadDashboardStats() {
-            try {
-                const response = await fetch(`${BACKEND_URL}/stats`);
-                const stats = await response.json();
-                
-                // Update stat cards
-                const statCards = document.querySelectorAll('.stat-card');
-                const statValues = [
-                    stats.total_verifications,
-                    stats.verified,
-                    stats.flagged,
-                    stats.pending
-                ];
-                
-                statCards.forEach((card, index) => {
-                    const valueElement = card.querySelector('.stat-value');
-                    valueElement.textContent = statValues[index];
-                    
-                    // Add animation to changed values
-                    valueElement.style.animation = 'pulse 0.5s ease';
-                });
-                
-                // Calculate percentages if total > 0
-                if (stats.total_verifications > 0) {
-                    const trends = [
-                        ((stats.verified / stats.total_verifications) * 100).toFixed(1),
-                        ((stats.flagged / stats.total_verifications) * 100).toFixed(1),
-                        ((stats.pending / stats.total_verifications) * 100).toFixed(1)
-                    ];
-                    
-                    document.querySelectorAll('.stat-trend').forEach((trend, index) => {
-                        if (index > 0) {
-                            trend.textContent = trends[index - 1] + '%';
-                        }
-                    });
-                }
-            } catch (error) {
-                console.error('Failed to load dashboard stats:', error);
-            }
-        }
-
-        // Load stats on page load and refresh every 5 seconds (deferred to ensure DOM renders)
-        setTimeout(() => {
-            loadDashboardStats();
-            setInterval(loadDashboardStats, 5000);
-        }, 100);
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
             const toggleBtn = document.getElementById('darkModeToggle');
@@ -383,12 +318,6 @@
                 toggleBtn.textContent = '🌙';
                 localStorage.setItem('darkMode', 'disabled');
             }
-        }
-
-        // Check for saved dark mode preference
-        if (localStorage.getItem('darkMode') === 'enabled') {
-            document.body.classList.add('dark-mode');
-            document.getElementById('darkModeToggle').textContent = '☀️';
         }
 
         // Profile Modal Functions
@@ -463,7 +392,7 @@
                     const formData = new FormData();
                     formData.append('file', file);
                     
-                    const response = await fetch(`${BACKEND_URL}/detect-document`, {
+                    const response = await fetch(`${API_BASE_URL}/api/v1/detect-document`, {
                         method: 'POST',
                         body: formData
                     });
@@ -573,7 +502,11 @@
         }
 
         function reviewCase(id) {
-            showNotification('Reviewing case ' + id, 'info');
+            if (typeof viewDetails === 'function') {
+                viewDetails(id);
+            } else {
+                showNotification('Reviewing case ' + id, 'info');
+            }
         }
 
         function confirmFraud() {
