@@ -115,7 +115,7 @@
 
     <script src="script.js"></script>
     <script>
-        const BACKEND_URL = 'http://localhost:8080';
+        const BACKEND_URL = 'http://localhost:8000/api/v1';
         
         // Load current user
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
@@ -140,8 +140,8 @@
         // Load verifications on page load
         async function loadVerifications() {
             try {
-                const response = await fetch(`${BACKEND_URL}/verifications?limit=${pageSize}&offset=${currentPage * pageSize}`);
-                
+                const response = await fetch(`${BACKEND_URL}/verification-logs/records?limit=${pageSize}&offset=${currentPage * pageSize}`);
+
                 if (!response.ok) {
                     throw new Error(`API error: ${response.status}`);
                 }
@@ -156,7 +156,7 @@
                 console.error('Error loading verifications:', error);
                 document.getElementById('verificationsTableBody').innerHTML = `
                     <tr style="text-align: center; color: #ef4444;">
-                        <td colspan="6">Error loading verification records. Make sure backend is running on port 8080.</td>
+                        <td colspan="6">Error loading verification records. Make sure backend is running on port 8000.</td>
                     </tr>
                 `;
             }
@@ -179,6 +179,8 @@
                                   record.status === 'Review Required' ? '#f59e0b' : '#ef4444';
                 const statusBg = record.status === 'Verified' ? '#d1fae5' : 
                                record.status === 'Review Required' ? '#fef3c7' : '#fee2e2';
+                const confidencePercent = Math.round((record.confidence_score || 0) * 100);
+                const confidenceColor = confidencePercent < 60 ? '#ef4444' : '#059669';
                 
                 const date = new Date(record.created_at);
                 const formattedDate = date.toLocaleDateString('en-US', {
@@ -194,8 +196,8 @@
                         </td>
                         <td>${record.document_type || 'Unknown'}</td>
                         <td>
-                            <div style="font-weight: 600; color: #059669; font-size: 14px;">
-                                ${Math.round(record.confidence_score * 100)}%
+                            <div style="font-weight: 600; color: ${confidenceColor}; font-size: 14px;">
+                                ${confidencePercent}%
                             </div>
                         </td>
                         <td>

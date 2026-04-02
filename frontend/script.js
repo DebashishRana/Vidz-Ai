@@ -1,5 +1,5 @@
 // Base API URL
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 // Global Data Arrays
 let verificationData = [];
@@ -50,23 +50,27 @@ async function saveDataLocally() {
 async function fetchDashboardData() {
     try {
         const [verRes, alertRes, docRes] = await Promise.all([
-            fetch(`${API_BASE_URL}/api/v1/dashboard/verifications`),
-            fetch(`${API_BASE_URL}/api/v1/dashboard/alerts`),
-            fetch(`${API_BASE_URL}/api/v1/dashboard/documents`)
+            fetch(`${API_BASE_URL}/verification-logs/records`),
+            fetch(`${API_BASE_URL}/dashboard/alerts`),
+            fetch(`${API_BASE_URL}/dashboard/documents`)
         ]);
 
         if (verRes.ok) {
             const vPayload = await verRes.json();
-            const vData = Array.isArray(vPayload) ? vPayload : (vPayload.verifications || []);
-            verificationData = vData.map(v => ({
-                id: v.id,
-                name: v.user_id ? 'User ' + v.user_id : 'Unknown User',
-                email: v.user_id ? `user${v.user_id}@email.com` : 'No Email',
-                docType: 'Document', 
-                date: new Date(v.created_at || Date.now()).toISOString().split('T')[0],
-                status: (v.status || 'pending').toLowerCase(),
-                riskScore: v.risk_score || 0
-            }));
+            const vData = Array.isArray(vPayload) ? vPayload : (vPayload.data || vPayload.verifications || []);
+            verificationData = vData.map(v => {
+                const statusStr = (v.status || 'pending').toLowerCase();
+                let normalizedStatus = statusStr.includes('verif') ? 'verified' : (statusStr.includes('fail') || statusStr.includes('review') || statusStr.includes('flag') ? 'flagged' : 'pending');
+                return {
+                    id: v.verification_id || v.id,
+                    name: v.user_id ? 'User ' + v.user_id : 'Unknown User',
+                    email: v.user_id ? `user${v.user_id}@email.com` : 'No Email',
+                    docType: v.document_type || 'Document',
+                    date: new Date(v.created_at || Date.now()).toISOString().split('T')[0],
+                    status: normalizedStatus,
+                    riskScore: v.confidence_score !== undefined ? Math.round(v.confidence_score * 100) : (v.risk_score || 0)
+                };
+            });
         } else {
             verificationData = [];
         }
@@ -366,14 +370,10 @@ function populateVerificationsTable(filterStatus = 'all', filterRisk = 'all', se
         
         row.innerHTML = `
             <td>${item.id}</td>
-            <td>${item.name}</td>
-            <td>${item.email}</td>
-            <td>${item.docType}</td>
-            <td>${item.date}</td>
-            <td><span class="status-badge ${statusClass}">${item.status.toUpperCase()}</span></td>
-            <td><span class="risk-score ${riskClass}">${item.riskScore}%</span></td>
-            <td>
-                <button class="view-btn" onclick="viewDetails('${item.id}')" style="margin-right: 5px;">View</button>
+              <td>${item.docType}</td>
+              <td><span class="risk-score ${riskClass}">${item.riskScore}%</span></td>
+              <td><span class="status-badge ${statusClass}">${item.status.toUpperCase()}</span></td>
+              <td>${item.date}</td>
                 <button class="view-btn" style="background: var(--danger); color: white; border: none;" onclick="flagItem('${item.id}')">Flag</button>
             </td>
         `;
@@ -402,7 +402,68 @@ function filterVerifications() {
 
 // Initialize Alerts page
 function initAlerts() {
+    const derivedAlerts = buildAlertsFromVerifications();
+    alertData = mergeAlertsById(alertData, derivedAlerts);
+
     populateAlertsTable();
+    updateAlertMetrics();
+}
+
+function buildAlertsFromVerifications() {
+    return verificationData
+        .map(item => {
+            const confidence = Number(item.riskScore || 0) / 100;
+            if (Number.isNaN(confidence) || confidence >= 0.75) {
+                return null;
+            }
+
+            const riskLevel = confidence < 0.5 ? 'High' : 'Medium';
+
+            return {
+                id: `VF-${item.id}`,
+                name: item.name || 'Unknown User',
+                risk: riskLevel,
+                type: 'Low Confidence Verification',
+                date: item.date || new Date().toISOString().split('T')[0],
+                status: 'Pending Review'
+            };
+        })
+        .filter(Boolean);
+}
+
+function mergeAlertsById(existingAlerts, derivedAlerts) {
+    const mergedMap = new Map();
+
+    (existingAlerts || []).forEach(alert => {
+        if (alert && alert.id) {
+            mergedMap.set(alert.id, alert);
+        }
+    });
+
+    (derivedAlerts || []).forEach(alert => {
+        if (alert && alert.id) {
+            mergedMap.set(alert.id, alert);
+        }
+    });
+
+    return Array.from(mergedMap.values());
+}
+
+function updateAlertMetrics() {
+    const highRisk = alertData.filter(alert => alert.risk === 'High').length;
+    const mediumRisk = alertData.filter(alert => alert.risk === 'Medium').length;
+    const lowRisk = alertData.filter(alert => alert.risk === 'Low').length;
+    const pendingReview = alertData.filter(alert => (alert.status || '').toLowerCase().includes('pending')).length;
+
+    const highEl = document.getElementById('highRiskCount');
+    const mediumEl = document.getElementById('mediumRiskCount');
+    const lowEl = document.getElementById('lowRiskCount');
+    const pendingEl = document.getElementById('pendingReviewCount');
+
+    if (highEl) highEl.textContent = highRisk;
+    if (mediumEl) mediumEl.textContent = mediumRisk;
+    if (lowEl) lowEl.textContent = lowRisk;
+    if (pendingEl) pendingEl.textContent = pendingReview;
 }
 
 // Populate alerts table
@@ -412,6 +473,11 @@ function populateAlertsTable() {
     
     tbody.innerHTML = '';
     
+    if (alertData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 30px;">No flagged alerts found</td></tr>';
+        return;
+    }
+
     alertData.forEach(alert => {
         const row = document.createElement('tr');
         
