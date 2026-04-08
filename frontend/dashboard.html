@@ -149,7 +149,7 @@
                                 <th>Document</th>
                                 <th>Date</th>
                                 <th>Status</th>
-                                <th>Risk Score</th>
+                                <th>Confidence Score</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -388,13 +388,42 @@
                     const detections = Array.isArray(result.detections) ? result.detections : [];
                     const topDetection = detections.length > 0 ? detections[0] : null;
                     
-                    // Add result to the table
-                    const tr = document.createElement('tr');
                     const reqId = 'REQ-' + Math.floor(Math.random() * 10000);
                     const isAadhar = !!topDetection && topDetection.label === 'Aadhar' && Number(topDetection.confidence || 0) > 0.6;
                     const confidenceDisplay = topDetection ? (Number(topDetection.confidence || 0) * 100).toFixed(1) + '%' : '--';
                     
                     if (isAadhar) aadharFoundCount++;
+                    
+                    // Save detection result for local review view
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            sessionStorage.setItem('recent_upload_' + reqId, e.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                    
+                    // Attempt backend save so it persists
+                    try {
+                        const saveUrl = `${API_BASE_URL}/api/v1/save-verification`;
+                        await fetch(saveUrl, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                verification_id: reqId,
+                                document_type: isAadhar ? 'Aadhar' : (topDetection ? topDetection.label : 'Unknown'),
+                                confidence_score: topDetection ? Number(topDetection.confidence) : 0.0,
+                                status: isAadhar ? 'Detected' : 'Unknown',
+                                detected_address: "Awaiting text extraction",
+                                verification_details: { source: 'batch_upload', file_name: file.name }
+                            })
+                        });
+                    } catch(err) {
+                        console.warn("Could not save to DB, using local only", err);
+                    }
+                    
+                    // Add result to the table
+                    const tr = document.createElement('tr');
 
                     tr.innerHTML = `
                         <td>${reqId}</td>

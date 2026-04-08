@@ -343,8 +343,8 @@ function populateKYCTable() {
         const statusClass = item.status === 'verified' ? 'verified' : 
                            (item.status === 'flagged' ? 'flagged' : 'pending');
         
-        const riskClass = item.riskScore > 70 ? 'high' : 
-                         (item.riskScore > 30 ? 'medium' : 'low');
+        const riskClass = item.riskScore > 60 ? 'low' : 
+                         (item.riskScore >= 50 ? 'medium' : 'high');
         
         row.innerHTML = `
             <td>${item.id}</td>
@@ -391,14 +391,14 @@ function populateVerificationsTable(filterStatus = 'all', filterRisk = 'all', se
         filteredData = filteredData.filter(item => item.status === filterStatus);
     }
     
-    // Apply risk filter
+    // Apply confidence filter
     if (filterRisk !== 'all') {
-        if (filterRisk === 'low') {
-            filteredData = filteredData.filter(item => item.riskScore <= 30);
-        } else if (filterRisk === 'medium') {
-            filteredData = filteredData.filter(item => item.riskScore > 30 && item.riskScore <= 70);
-        } else if (filterRisk === 'high') {
-            filteredData = filteredData.filter(item => item.riskScore > 70);
+        if (filterRisk === 'low') { // Used as 'Low Risk' / High Confidence
+            filteredData = filteredData.filter(item => item.riskScore > 60);
+        } else if (filterRisk === 'medium') { // Medium Risk / Medium Confidence
+            filteredData = filteredData.filter(item => item.riskScore >= 50 && item.riskScore <= 60);
+        } else if (filterRisk === 'high') { // High Risk / Low Confidence
+            filteredData = filteredData.filter(item => item.riskScore < 50);
         }
     }
     
@@ -423,8 +423,8 @@ function populateVerificationsTable(filterStatus = 'all', filterRisk = 'all', se
         const statusClass = item.status === 'verified' ? 'verified' : 
                            (item.status === 'flagged' ? 'flagged' : 'pending');
         
-        const riskClass = item.riskScore > 70 ? 'high' : 
-                         (item.riskScore > 30 ? 'medium' : 'low');
+        const riskClass = item.riskScore > 60 ? 'low' : 
+                         (item.riskScore >= 50 ? 'medium' : 'high');
         
         row.innerHTML = `
             <td>${item.id}</td>
@@ -693,17 +693,30 @@ function uploadBackImage() {
 
 // View details
 function viewDetails(id) {
-    const ver = verificationData.find(v => v.id === id);
-    if (!ver) {
+    let ver = verificationData.find(v => String(v.id) === String(id));
+    
+    // In local testing/batch uploads, it might just exist in sessionStorage but not yet in the DB load
+    let sessImg = sessionStorage.getItem('recent_upload_' + id);
+    let sessAddress = sessionStorage.getItem('recent_address_' + id) || "Address not detected";
+    
+    if (!ver && !sessImg) {
         showNotification('Verification case not found.', 'error');
         return;
     }
     
-    // Attempt to pull real data from session storage (populated during KYC flow)
-    const sessImg = sessionStorage.getItem('recent_upload_' + id);
-    const sessAddress = sessionStorage.getItem('recent_address_' + id) || "Address not detected";
+    // Polyfill if it missed the initial data load
+    if (!ver) {
+        ver = {
+            name: "Unknown User",
+            id: id,
+            confidence: 0,
+            status: "Pending",
+            riskScore: 0,
+            docType: "Document"
+        };
+    }
     
-    const doc = documentData.find(d => d.verification_id === id);
+    const doc = documentData.find(d => String(d.verification_id) === String(id));
     let extractedText = doc ? (doc.extracted_text || "") : "";
     
     if (!extractedText.trim()) {

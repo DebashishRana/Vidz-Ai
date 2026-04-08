@@ -14,70 +14,61 @@
     <div class="login-wrapper">
         <!-- Left Panel - Form -->
         <div class="login-left-panel">
-            <!-- Logo -->
-            <div class="login-logo" style="display: flex; flex-direction: column; align-items: center;">
-                <div style="display: flex; align-items: center; justify-content: center;">
-                    <div class="logo-circle">🛡️</div>
-                    <span class="logo-name">Citadel</span>
+            <!-- Logo and Create Account -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 50px; width: 100%;">
+                <div class="login-logo" style="margin-bottom: 0;">
+                    <div style="display: flex; align-items: center; justify-content: center;">
+                        <div class="logo-circle" style="background: #4361ee; color: white; border-radius: 50%; width: 36px; height: 36px; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: -5px; right: -5px; width: 26px; height: 26px; background: white; border-radius: 50%;"></div>
+                        </div>
+                    </div>
                 </div>
-                <div style="font-weight: bold; font-size: 1.2rem; color: #0d9488; margin-top: 10px; letter-spacing: 0.5px;">KYC verification simplified</div>
+                <a href="#" onclick="switchAuthTab('register')" style="color: #4361ee; text-decoration: none; font-weight: 600; font-size: 14px;">Create an account</a>
             </div>
 
             <!-- Login Form -->
             <div id="login-form" class="auth-form active">
-                <h1 class="form-title">Welcome Back!</h1>
-                <p class="form-subtitle">Sign in to access your dashboard and continue optimizing your KYC process.</p>
+                <h1 class="form-title" style="font-size: 28px; margin-bottom: 8px;">Login</h1>
+                <p class="form-subtitle" style="margin-bottom: 24px;">Enter to improve your sleep and bring peace to your life</p>
                 
-                <form onsubmit="login(event)">
-                    <div class="form-group">
-                        <div class="input-wrapper">
-                            <i class="fas fa-envelope input-icon"></i>
-                            <input type="email" id="email" class="form-input" placeholder="Enter your email" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="input-wrapper password-wrapper">
-                            <i class="fas fa-lock input-icon"></i>
-                            <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
-                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="form-options">
-                        <label class="remember-me">
-                            <input type="checkbox">
-                            <span>Remember me</span>
-                        </label>
-                        <a href="#" class="forgot-password">Forgot Password?</a>
-                    </div>
-
-                    <button type="submit" class="btn-signin">Sign In</button>
-                </form>
-
-                <!-- Divider -->
-                <div class="divider">
-                    <span>OR</span>
-                </div>
-
                 <!-- Social Login -->
                 <div class="social-login">
-                    <button type="button" class="btn-social google" onclick="loginWithGoogle()">
-                        <i class="fab fa-google"></i>
-                        <span>Continue with Google</span>
+                    <button type="button" class="btn-social google" onclick="loginWithGoogle()" style="border-radius: 8px; font-weight: 500;">
+                        <i class="fab fa-google" style="color: #ea4335;"></i>
+                        <span style="color: #212529;">Sign in with Google</span>
                     </button>
-                    <button type="button" class="btn-social apple" onclick="loginWithApple()">
-                        <i class="fab fa-apple"></i>
-                        <span>Continue with Apple</span>
+                    <button type="button" class="btn-social" onclick="loginWithFacebook()" style="border-radius: 8px; font-weight: 500;">
+                        <i class="fab fa-facebook" style="color: #1877f2;"></i>
+                        <span style="color: #212529;">Sign in with Facebook</span>
                     </button>
                 </div>
 
-                <!-- Sign Up Link -->
-                <p class="signup-prompt">
-                    Don't have an account? <a href="#" onclick="switchAuthTab('register')">Sign Up</a>
-                </p>
+                <!-- Divider -->
+                <div class="divider" style="margin: 20px 0;">
+                    <span>or</span>
+                </div>
+
+                <form onsubmit="login(event)">
+                    <div class="form-group" style="text-align: left;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #212529;">Email</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" class="form-input" placeholder="Enter your email" required style="padding-left: 16px; border-radius: 8px; background: white;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="text-align: left; margin-bottom: 15px;">
+                        <label style="display: block; font-weight: 600; margin-bottom: 8px; font-size: 14px; color: #212529;">Password</label>
+                        <div class="input-wrapper password-wrapper">
+                            <input type="password" id="password" class="form-input" placeholder="Enter your password" required style="padding-left: 16px; border-radius: 8px; background: white;">
+                        </div>
+                    </div>
+
+                    <div class="form-options" style="justify-content: flex-end; margin-bottom: 24px;">
+                        <a href="#" class="forgot-password" style="font-weight: 400; font-size: 13px;">Forgout your password</a>
+                    </div>
+
+                    <button type="submit" class="btn-signin" style="background: #4361ee; border-radius: 24px; box-shadow: none;">Login</button>
+                </form>
             </div>
 
             <!-- Register Form -->
@@ -148,8 +139,16 @@
         </div>
 
         <!-- Right Panel - Promo -->
-        <div class="login-right-panel" style="background: url('gradient-wallpaper-0025.png') no-repeat center center; background-size: cover;">
-            <!-- Removed testimonial and features content -->
+        <div class="login-right-panel" style="background: url('gradient-wallpaper-0025.png') no-repeat center center; background-size: cover; position: relative;">
+            <div style="position: absolute; bottom: 100px; left: 0; width: 100%; text-align: center; color: white;">
+                <h2 style="font-size: 32px; font-weight: 700; margin-bottom: 20px;">Sleep well to explore new avenues</h2>
+                <p style="font-size: 16px; opacity: 0.9; max-width: 400px; margin: 0 auto; line-height: 1.5;">Varius dictumst interdum dolor lorem. Hendrerit at quisque purus non posuere.</p>
+                <div style="display: flex; justify-content: center; gap: 8px; margin-top: 30px;">
+                    <div style="width: 24px; height: 4px; background: white; border-radius: 2px;"></div>
+                    <div style="width: 8px; height: 4px; background: rgba(255,255,255,0.4); border-radius: 2px;"></div>
+                    <div style="width: 8px; height: 4px; background: rgba(255,255,255,0.4); border-radius: 2px;"></div>
+                </div>
+            </div>
         </div>
     </div>
 
